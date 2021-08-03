@@ -1,6 +1,33 @@
 #include "shell.h"
 
 /**
+ * op_selector - operator selector
+ *
+ */
+int op_selector(cmd_op_list *str, char *args)
+{
+	int j;
+	op_list opf[] = {
+		{">", func_tofile},
+		{">>", func_addtofile},
+		{"<", func_fromfile},
+		{"<<", func_heredoc},
+		{"|", },
+		{";", },
+		{"&&", },
+		{"||", },
+		{NULL, NULL}
+	};
+
+	for (j = 0; opf[j].op != NULL, j++)
+	{
+		if (_strcmp(opf[j].op, args) == 0)
+			return (opf[j].func);
+	}
+	return (NULL);
+}
+
+/**
  * command_count - function to count commands
  * @str: input commands
  * Return: count of commands

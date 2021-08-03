@@ -14,10 +14,26 @@
 
 extern char **environ;
 
+typedef struct commands_w_op
+{
+	char **left_cmd;
+	char *op;
+	char **right_cmd;
+	int (*f)(struct commands_w_op *);
+	struct commands_w_op *next;
+} cmd_op_list;
+
+typedef struct operators
+{
+	char *op;
+	int (*func)(cmd_op_list *);
+} op_list;
+
 /* puts and putchar */
 int _putchar(char c);
 void _puts(char *str);
 /* tokenizer set */
+int op_selector(cmd_op_list *str, int i);
 int command_count(char *str);
 char **tokenize(char *str);
 void free_token(char **tokcmd);
@@ -31,7 +47,7 @@ char *_strncpy(char *dest, char *src, int n);
 void *_realloc(void *ptr, unsigned int new_size);
 int _strncmp(const char *s1, const char *s2, int len);
 char *_strdup(const char *str);
-void _getoutof(char **command_array, char *buffer);
+/* unused: void exit_shell(char **command_array, char *buffer); */
 /* execute function */
 void execute(char **command_array, char *buffer, char **argv);
 void changedir(char **command_array, char *buffer);
@@ -49,5 +65,11 @@ void handle_ctrl_c(int signal);
 /* builtins */
 int check_builtins(char **command_array, char *buffer);
 void print_the_env(void);
+void _getoutof(char **command_array, char *buffer);
+/* stream redirections */
+int func_tofile(cmd_op_list *cmds, int i);
+int func_addtofile(cmd_op_list *cmds, int i);
+int func_fromfile(cmd_op_list *cmds, int i);
+int func_heredoc(cmd_op_list *cmds, int i);
 
 #endif
