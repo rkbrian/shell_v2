@@ -33,7 +33,7 @@ typedef struct operators
 int _putchar(char c);
 void _puts(char *str);
 /* tokenizer set */
-int op_selector(cmd_op_list *str, int i);
+void op_selector(cmd_op_list *arglist, char *args);
 int command_count(char *str);
 char **tokenize(char *str);
 void free_token(char **tokcmd);
@@ -66,10 +66,16 @@ void handle_ctrl_c(int signal);
 int check_builtins(char **command_array, char *buffer);
 void print_the_env(void);
 void _getoutof(char **command_array, char *buffer);
+
 /* stream redirections */
-int func_tofile(cmd_op_list *cmds, int i);
-int func_addtofile(cmd_op_list *cmds, int i);
-int func_fromfile(cmd_op_list *cmds, int i);
-int func_heredoc(cmd_op_list *cmds, int i);
+void func_tofile(cmd_op_list *arglist, char *args);
+void func_addtofile(cmd_op_list *arglist, char *args);
+void func_fromfile(cmd_op_list *arglist, char *args);
+void func_heredoc(cmd_op_list *arglist, char *args);
+/* command operators */
+void func_pipeline(cmd_op_list *arglist, char *args);
+void func_separate(cmd_op_list *arglist, char *args);
+void func_and(cmd_op_list *arglist, char *args);
+void func_or(cmd_op_list *arglist, char *args);
 
 #endif

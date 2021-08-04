@@ -2,9 +2,10 @@
 
 /**
  * op_selector - operator selector
- *
+ * @arglist: linked list of commands
+ * @args: operator string from commands
  */
-int op_selector(cmd_op_list *str, char *args)
+void op_selector(cmd_op_list *arglist, char *args)
 {
 	int j;
 	op_list opf[] = {
@@ -12,19 +13,18 @@ int op_selector(cmd_op_list *str, char *args)
 		{">>", func_addtofile},
 		{"<", func_fromfile},
 		{"<<", func_heredoc},
-		{"|", },
-		{";", },
-		{"&&", },
-		{"||", },
+		{"|", func_pipeline},
+		{";", func_separate},
+		{"&&", func_and},
+		{"||", func_or},
 		{NULL, NULL}
 	};
 
 	for (j = 0; opf[j].op != NULL, j++)
 	{
 		if (_strcmp(opf[j].op, args) == 0)
-			return (opf[j].func);
+			opf[j].func(arglist, args);
 	}
-	return (NULL);
 }
 
 /**
@@ -60,37 +60,34 @@ int command_count(char *str)
  */
 char **tokenize(char *str)
 {
-	char *token = NULL;
-	char **token_col = NULL;
-	int size = 0;
-	int i = 0;
+	char *token = NULL, **token_col = NULL;
+	int size = 0, i = 0;
+	cmd_op_list *arglist;
 
 	str[_strlen(str) - 1] = '\0';
 	size = command_count(str);
 	if (size == 0)
 		return (NULL);
-
 	token_col = malloc((sizeof(char *)) * (size + 1));
 	if (!token_col)
-	{
-		free(token_col);
 		return (NULL);
+	while ((token = strtok(str, " "))
+	{
+		op_selector(token);
+
 	}
-	token = strtok(str, " ");
-	while (token)
+	while ((token = strtok(str, " "))
 	{
 		token_col[i] = malloc(_strlen(token) + 1);
 		if (token_col[i] == NULL)
 		{
 			for (i--; i >= 0; i--)
 				free(token_col[i]);
-
 			free(token_col);
 			return (NULL);
 		}
 		_strncpy(token_col[i], token, _strlen(token) + 1);
-		token = strtok(NULL, " ");
-		i++;
+		token = strtok(NULL, " "), i++;
 	}
 	token_col[i] = NULL;
 	return (token_col);
