@@ -3,9 +3,9 @@
 /**
  * op_selector - operator selector
  * @arglist: linked list of commands
- * @args: operator string from commands
+ * Return: arglist
  */
-void op_selector(cmd_op_list *arglist, char *args)
+cmd_op_list *op_selector(cmd_op_list *arglist)
 {
 	int j;
 	op_list opf[] = {
@@ -14,6 +14,7 @@ void op_selector(cmd_op_list *arglist, char *args)
 		{"<", func_fromfile},
 		{"<<", func_heredoc},
 		{"|", func_pipeline},
+
 		{";", func_separate},
 		{"&&", func_and},
 		{"||", func_or},
@@ -22,9 +23,16 @@ void op_selector(cmd_op_list *arglist, char *args)
 
 	for (j = 0; opf[j].op != NULL, j++)
 	{
-		if (_strcmp(opf[j].op, args) == 0)
-			opf[j].func(arglist, args);
+		if (_strcmp(opf[j].op, arglist->op) == 0)
+			opf[j].func(arglist);
+		else
+		{
+			arglist->left = arglist->op;
+			arglist->op = NULL;
+			arglist->position = 0;
+		}
 	}
+	return (arglist);
 }
 
 /**
@@ -32,22 +40,32 @@ void op_selector(cmd_op_list *arglist, char *args)
  * @str: input commands
  * Return: count of commands
  */
-
 int command_count(char *str)
 {
-	int count = 0;
-	int i = 0;
-	int boool = 0;
+	int count = 0, boool = 0, i = 0;
+	int db_quote_flag = 1, sg_quote_flag = 1;
 
 	while (str[i])
 	{
 		if (str[i] == ' ')
-			boool = 0;
-		else if (boool == 0)
 		{
-			count++;
-			boool = 1;
+			if (str[i + 1] == '\"')
+			{
+				db_quote_flag = db_quote_flag * (-1);
+				if (db_quote_flag > 0)
+					count++, boool = 1;
+			}
+			else if (str[i + 1] == '\'')
+			{
+				sg_quote_flag = sg_quote_flag * (-1);
+				if (sg_quote_flag > 0)
+					count++, boool = 1;
+			}
+			else
+				boool = 0;
 		}
+		else if (boool == 0)
+			count++, boool = 1;
 		i++;
 	}
 	return (count);
@@ -61,8 +79,8 @@ int command_count(char *str)
 char **tokenize(char *str)
 {
 	char *token = NULL, **token_col = NULL;
-	int size = 0, i = 0;
-	cmd_op_list *arglist;
+	int size = 0, i = 0, position = 0;
+	cmd_op_list *arglist = NULL;
 
 	str[_strlen(str) - 1] = '\0';
 	size = command_count(str);
@@ -71,11 +89,18 @@ char **tokenize(char *str)
 	token_col = malloc((sizeof(char *)) * (size + 1));
 	if (!token_col)
 		return (NULL);
+
 	while ((token = strtok(str, " "))
 	{
-		op_selector(token);
-
+		arglist->op = token, arglist->position = position;
+		arglist = op_selector(arglist);
+		if (arglist->position != 0)
+		{
+			arglist->;
+		}
+		position++;
 	}
+
 	while ((token = strtok(str, " "))
 	{
 		token_col[i] = malloc(_strlen(token) + 1);

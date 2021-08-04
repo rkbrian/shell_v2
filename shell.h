@@ -18,6 +18,7 @@ typedef struct commands_w_op
 {
 	char **left_cmd;
 	char *op;
+	int position = 0;
 	char **right_cmd;
 	int (*f)(struct commands_w_op *);
 	struct commands_w_op *next;
@@ -68,14 +69,14 @@ void print_the_env(void);
 void _getoutof(char **command_array, char *buffer);
 
 /* stream redirections */
-void func_tofile(cmd_op_list *arglist, char *args);
-void func_addtofile(cmd_op_list *arglist, char *args);
-void func_fromfile(cmd_op_list *arglist, char *args);
-void func_heredoc(cmd_op_list *arglist, char *args);
+void func_tofile(cmd_op_list *arglist);
+void func_addtofile(cmd_op_list *arglist);
+void func_fromfile(cmd_op_list *arglist);
+void func_heredoc(cmd_op_list *arglist);
 /* command operators */
-void func_pipeline(cmd_op_list *arglist, char *args);
-void func_separate(cmd_op_list *arglist, char *args);
-void func_and(cmd_op_list *arglist, char *args);
-void func_or(cmd_op_list *arglist, char *args);
+void func_pipeline(cmd_op_list *arglist);
+void func_separate(cmd_op_list *arglist);
+void func_and(cmd_op_list *arglist);
+void func_or(cmd_op_list *arglist);
 
 #endif

@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * func_pipeline - 
+ * func_pipeline - function to pipe results of left to right
  * @arglist: linked list of commands
  */
 void func_pipeline(cmd_op_list *arglist, char *args)
