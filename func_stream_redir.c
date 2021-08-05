@@ -3,10 +3,10 @@
 /**
  * func_tofile - write or rewrite stream to a file
  * @arglist: linked list of commands
- * @args: what is this??????
  */
-void func_tofile(cmd_op_list *arglist, char *args)
+void func_tofile(cmd_op_list *arglist)
 {
+
 
 
 }

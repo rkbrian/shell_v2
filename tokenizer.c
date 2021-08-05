@@ -24,11 +24,16 @@ cmd_op_list *op_selector(cmd_op_list *arglist)
 	for (j = 0; opf[j].op != NULL, j++)
 	{
 		if (_strcmp(opf[j].op, arglist->op) == 0)
+		{
 			opf[j].func(arglist);
+			free(arglist-op);
+		}
 		else
 		{
-			arglist->left = arglist->op;
-			arglist->op = NULL;
+			arglist->left = malloc(sizeof(char) * (1 + _strlen(arglist->op)));
+			if (arglist->left == NULL)
+				return (NULL);
+			arglist->left = _strcpy(arglist->left, arglist->op);
 			arglist->position = 0;
 		}
 	}
@@ -89,15 +94,18 @@ char **tokenize(char *str)
 	token_col = malloc((sizeof(char *)) * (size + 1));
 	if (!token_col)
 		return (NULL);
-
+	arglist = malloc(sizeof(cmd_op_list));
+	if (arglist == NULL)
+		return (NULL);
 	while ((token = strtok(str, " "))
 	{
-		arglist->op = token, arglist->position = position;
+		arglist->op = malloc(sizeof(char) * (_strlen(token) + 1));
+		if (arglist->op == NULL)
+			return (NULL);
+		arglist->op = _strcpy(arglist, token), arglist->position = position;
 		arglist = op_selector(arglist);
-		if (arglist->position != 0)
-		{
-			arglist->;
-		}
+		if (arglist->position > 0)
+			arglist->next = arglist; /* really??????? */
 		position++;
 	}
 
