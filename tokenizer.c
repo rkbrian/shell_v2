@@ -105,10 +105,15 @@ char **tokenize(char *str)
 		arglist->op = _strcpy(arglist, token), arglist->position = position;
 		arglist = op_selector(arglist);
 		if (arglist->position > 0)
+		{
+			token = strtok(str, " ")
+
+
 			arglist->next = arglist; /* really??????? */
+		}
 		position++;
 	}
-
+/* Is it necessary to build a linked list to store all tokens, or stuff not processed yet? */
 	while ((token = strtok(str, " "))
 	{
 		token_col[i] = malloc(_strlen(token) + 1);
