@@ -63,28 +63,39 @@ void func_fromfile(cmd_op_list *arglist)
 	ssize_t fd, len, wri;
 	char *buffalo;
 	cmd_op_list current = NULL;
+	int i = 0;
 
 	current = arglist;
 	if (current == NULL || current->right == NULL)
                 return;
 	fd = open(current->right, ORDONLY);
-	len = read(fd, buffalo);
 	if (fd == -1)
 		return;
+	len = read(fd, buffalo, 1024);
+	if (len == -1)
+		close(fd), return;
 	if (_strcmp(current->left, "cat") == 0)
+	{
 		buffalo = "0\0";
+		/* printf("%s\n", buffalo); */
+	}
 	else
 	{
+		i = 1;
 		buffalo = malloc(sizeof(char) * (len + 1));
 		if (buffalo == NULL)
 			return;
 	}
-
-
-
-
-
-
+	wri = write(STDOUT_FILENO, buffalo, len);
+	if (wri == -1)
+	{
+		if (i > 0)
+			free(buffalo);
+		close(fd), return;
+	}
+	if (i > 0)
+		free(buffalo);
+	close(fd);
 }
 
 /**
