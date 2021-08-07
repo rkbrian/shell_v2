@@ -1,11 +1,11 @@
 #include "shell.h"
 
 /**
- * op_selector - operator selector
+ * op_process - function to check if it is an operator for process
  * @arglist: linked list of commands
- * Return: arglist
+ * Return: 1 for matched op, 0 for no
  */
-cmd_op_list *op_selector(cmd_op_list *arglist)
+int *op_process(cmd_db *arglist)
 {
 	int j;
 	op_list opf[] = {
@@ -14,30 +14,48 @@ cmd_op_list *op_selector(cmd_op_list *arglist)
 		{"<", func_fromfile},
 		{"<<", func_heredoc},
 		{"|", func_pipeline},
-
 		{";", func_separate},
 		{"&&", func_and},
 		{"||", func_or},
 		{NULL, NULL}
 	};
-
 	for (j = 0; opf[j].op != NULL, j++)
 	{
 		if (_strcmp(opf[j].op, arglist->op) == 0)
 		{
 			opf[j].func(arglist);
-			free(arglist-op);
-		}
-		else
-		{
-			arglist->left = malloc(sizeof(char) * (1 + _strlen(arglist->op)));
-			if (arglist->left == NULL)
-				return (NULL);
-			arglist->left = _strcpy(arglist->left, arglist->op);
-			arglist->position = 0;
+			return (1);
 		}
 	}
-	return (arglist);
+	return (0);
+}
+
+/**
+ * new_node - function to create new node of command line database
+ * @token_arr: token array
+ * @token: the first token of the process
+ * @op_flag: operator flag, 1 for existance, 0 for none
+ * Return: command line database node
+ */
+cmd_db *new_node(char **token_col, char *token, int op_flag)
+{
+	cmd_db *newnode = NULL;
+
+	new_node = malloc(
+
+	token_col[i] = malloc(_strlen(token) + 1);
+	if (token_col[i] == NULL)
+	{
+		for (i--; i >= 0; i--)
+			free(token_col[i]);
+		free(token_col);
+		return (NULL);
+	}
+	_strncpy(token_col[i], token, _strlen(token) + 1);
+	token = strtok(NULL, " "), i++;
+
+
+	return (current);
 }
 
 /**
@@ -54,7 +72,7 @@ int command_count(char *str)
 	{
 		if (str[i] == ' ')
 		{
-			if (str[i + 1] == '\"')
+			/*if (str[i + 1] == '\"')
 			{
 				db_quote_flag = db_quote_flag * (-1);
 				if (db_quote_flag > 0)
@@ -66,8 +84,8 @@ int command_count(char *str)
 				if (sg_quote_flag > 0)
 					count++, boool = 1;
 			}
-			else
-				boool = 0;
+			else */
+			boool = 0;
 		}
 		else if (boool == 0)
 			count++, boool = 1;
@@ -85,7 +103,7 @@ char **tokenize(char *str)
 {
 	char *token = NULL, **token_col = NULL;
 	int size = 0, i = 0, position = 0;
-	cmd_op_list *arglist = NULL;
+	cmd_db *arglist = NULL;
 
 	str[_strlen(str) - 1] = '\0';
 	size = command_count(str);
@@ -97,23 +115,6 @@ char **tokenize(char *str)
 	arglist = malloc(sizeof(cmd_op_list));
 	if (arglist == NULL)
 		return (NULL);
-	while ((token = strtok(str, " "))
-	{
-		arglist->op = malloc(sizeof(char) * (_strlen(token) + 1));
-		if (arglist->op == NULL)
-			return (NULL);
-		arglist->op = _strcpy(arglist, token), arglist->position = position;
-		arglist = op_selector(arglist);
-		if (arglist->position > 0)
-		{
-			token = strtok(str, " ")
-
-
-			arglist->next = arglist; /* really??????? */
-		}
-		position++;
-	}
-/* Is it necessary to build a linked list to store all tokens, or stuff not processed yet? */
 	while ((token = strtok(str, " "))
 	{
 		token_col[i] = malloc(_strlen(token) + 1);
