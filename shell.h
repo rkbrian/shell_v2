@@ -48,11 +48,10 @@ typedef struct operators
 int _putchar(char c);
 void _puts(char *str);
 /* tokenizer set */
-void op_selector(cmd_op_list *arglist, char *args);
-cmd_db *new_node(char *token, int op_flag);
+cmd_db *create_node(char **t_array, char *op);
 int command_count(char *str);
 char **tokenize(char *str);
-void free_token(char **tokcmd);
+void free_db(cmd_db *headnode);
 /* helper function set 1 */
 int _strcmp(char *s1, char *s2);
 char *_strcpy(char *dest, const char *src);
@@ -65,9 +64,9 @@ int _strncmp(const char *s1, const char *s2, int len);
 char *_strdup(const char *str);
 /* unused: void exit_shell(char **command_array, char *buffer); */
 /* execute function */
-void execute(char **command_array, char *buffer, char **argv);
+void execute(cmd_db *head, char *buffer, char **argv);
 void changedir(char **command_array, char *buffer);
-
+void op_selector(cmd_op_list *arglist, char *args);
 /* environmental varriable */
 char *_getenv(const char *name);
 int dir_num(char *env_path);
