@@ -54,7 +54,10 @@ void print_the_env(void)
  */
 void _getoutof(char **command_array, char *buffer)
 {
-	free_token(command_array);
+	int i;
+
+	for (i = 0; command_array[i] != NULL; i++)
+		free(command_array[i]);
 	free(buffer);
 	exit(EXIT_SUCCESS);
 }

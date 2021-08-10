@@ -18,10 +18,7 @@ cmd_db *create_node(char **t_array, char *op)
 		node->token_arr[i] = t_array[i], i++;
 	node->cmd_head = t_array[0];
 	if (op)
-	{
 		node->op = op;
-		node->input_fd = STDIN_FILENO;
-	}
 	else
 		node->op = NULL;
 	node->next = NULL;
@@ -33,11 +30,11 @@ cmd_db *create_node(char **t_array, char *op)
  * @str: input commands
  * Return: array of tokenized commands
  */
-char **tokenize(char *str)
+cmd_db *tokenize(char *str)
 {
-	char *token = NULL, **token_col = NULL, *token_head = NULL;
-	char *proc_op[] = {">", ">>", "<", "<<", "|", ";", "&&", "||"}
-	int size = 0, i = 0, j = 0, headflag = 0;
+	char *token = NULL, **token_col = NULL, **temp = NULL;
+	char *proc_op[] = {">", ">>", "<", "<<", "|", ";", "&&", "||"};
+	int size = 0, i = 0, j = 0, headflag = 0, k = 0;
 	cmd_db *current = NULL, *head = NULL;
 
 	str[_strlen(str) - 1] = '\0', size = command_count(str);
@@ -52,10 +49,10 @@ char **tokenize(char *str)
 		{
 			if (_strcmp(token, proc_op[j]) == 0)
 			{
-				token_col[i] = NULL, current = create_node(token_col, proc_op[j]);
+				temp[k] = NULL, current = create_node(temp, proc_op[j]);
 				if (headflag == 0)
 					head = current, headflag = 1;
-				current = current->next, token_col = NULL, i = 0;
+				current = current->next, temp = NULL, k = 0;
 				break;
 			}
 		}
@@ -67,11 +64,10 @@ char **tokenize(char *str)
 			free(token_col);
 			return (NULL);
 		}
-		_strncpy(token_col[i], token, _strlen(token) + 1);
-		token = strtok(NULL, " "), i++;
+		_strncpy(token_col[i], token, _strlen(token) + 1), temp[k] = token_col[i];
+		token = strtok(NULL, " "), i++, k++;
 	}
 	token_col[i] = NULL, current = create_node(token_col, NULL);
-	current->next == NULL;
 	return (head);
 }
 
@@ -94,6 +90,10 @@ int command_count(char *str)
 	}
 	return (count);
 }
+
+/**
+ * spacesballs - adding space in empty strings
+ */
 
 /**
  * free_db - function to free malloc of ptr to tokenized command array

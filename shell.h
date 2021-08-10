@@ -16,25 +16,26 @@
 extern char **environ;
 
 /**
- * cmd_db - linked list database for command lines, divided by command operators
+ * struct command_line_database - linked list db, divided by command operators
  * @token_arr: pointer to the token array of each operation
  * @cmd_head: pointer to the starting token of each operation
  * @op: operator pointer
  * @input_fd: file descriptor for the input for the command
  * @output_fd: file descriptor for the output for the command
+ * @next: points to the next node
  */
 typedef struct command_line_database
 {
-	char **token_arr = NULL;
-	char *cmd_head = NULL;
-	char *op = NULL;
+	char **token_arr;
+	char *cmd_head;
+	char *op;
 	int input_fd;
 	int output_fd;
 	struct command_line_database *next;
 } cmd_db;
 
 /**
- * op_list - struct for selecting operations for operator
+ * struct operators - struct for selecting operations for operator
  * @op: operator pointer
  * @func: function for operation using command line database
  */
@@ -50,7 +51,7 @@ void _puts(char *str);
 /* tokenizer set */
 cmd_db *create_node(char **t_array, char *op);
 int command_count(char *str);
-char **tokenize(char *str);
+cmd_db *tokenize(char *str);
 void free_db(cmd_db *headnode);
 /* helper function set 1 */
 int _strcmp(char *s1, char *s2);
@@ -66,7 +67,7 @@ char *_strdup(const char *str);
 /* execute function */
 void execute(cmd_db *head, char *buffer, char **argv);
 void changedir(char **command_array, char *buffer);
-void op_selector(cmd_db *arglist, char *out_token);
+int op_process(cmd_db *arglist, char *out_token);
 /* environmental varriable */
 char *_getenv(const char *name);
 int dir_num(char *env_path);
@@ -85,9 +86,9 @@ void _getoutof(char **command_array, char *buffer);
 /* stream redirections */
 int func_tofile(cmd_db *arglist, char *out_token);
 int func_addtofile(cmd_db *arglist, char *out_token);
-int func_fromfile(cmd_db *arglist, char *out_token);
-int func_heredoc(cmd_db *arglist, char *out_token);
-int func_pipeline(cmd_db *arglist, char *out_token);
+/* int func_fromfile(cmd_db *arglist, char *out_token); */
+/* int func_heredoc(cmd_db *arglist, char *out_token); */
+/* int func_pipeline(cmd_db *arglist, char *out_token); */
 /* command operators */
 /* int func_separate(cmd_db *arglist); */
 /* int func_and(cmd_db *arglist); */

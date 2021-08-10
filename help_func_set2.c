@@ -85,6 +85,9 @@ char *_strdup(const char *str)
  */
 void exit_shell(char **command_array, char *buffer)
 {
-	free_token(command_array);
+	int i;
+
+	for (i = 0; command_array[i] != NULL; i++)
+		free(command_array[i]);
 	free(buffer);
 }

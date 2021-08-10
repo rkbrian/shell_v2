@@ -9,9 +9,9 @@
 void execute(cmd_db *head, char *buffer, char **argv)
 {
 	pid_t pid;
-	char *path_command = NULL, *filename;
+	char *path_command = NULL;
 	struct stat fstat;
-	int status, errornum;
+	int status;
 	cmd_db *current = NULL, *tmp = NULL;
 
 	current = head;
@@ -26,7 +26,7 @@ void execute(cmd_db *head, char *buffer, char **argv)
 		while (current)
 		{
 			check_builtins(current->token_arr, buffer), tmp = current->next;
-			current->output_fd = op_selector(current, tmp->cmd_head);
+			current->output_fd = op_process(current, tmp->cmd_head);
 			if (stat(current->cmd_head, &fstat) == 0)
 			{
 				execve(current->cmd_head, current->token_arr, NULL);
@@ -47,23 +47,6 @@ void execute(cmd_db *head, char *buffer, char **argv)
 		if (_strcmp(current->cmd_head, "exit") == 0)
 			_getoutof(current->token_arr, buffer);
 		free_db(head), free(buffer);
-	}
-}
-
-/**
- * output_adjust - adjust output fd
- * @node: linked list of commands
- * @out_token: file name in command line
- */
-void output_adjust(cmd_db *node, char *out_token);
-{
-	char *proc_op[] = {">", ">>", "<", "<<", "|"};
-	int i = 0;
-
-	for (; proc_op[i] != NULL; i++)
-	{
-		if (_strcmp(node->op, proc_op[i]))
-			node->output_fd = op_process(node, out_token);
 	}
 }
 
@@ -100,12 +83,12 @@ int op_process(cmd_db *arglist, char *out_token)
 	op_list opf[] = {
 		{">", func_tofile},
 		{">>", func_addtofile},
-		{"<", func_fromfile},
-		{"<<", func_heredoc},
-		{"|", func_pipeline},
+		/*{"<", func_fromfile},*/
+		/*{"<<", func_heredoc},*/
+		/*{"|", func_pipeline},*/
 		{NULL, NULL}
 	};
-	for (j = 0; opf[j].op != NULL, j++)
+	for (j = 0; opf[j].op != NULL; j++)
 	{
 		if (_strcmp(opf[j].op, arglist->op) == 0)
 		{
@@ -113,5 +96,5 @@ int op_process(cmd_db *arglist, char *out_token)
 			return (output_fd);
 		}
 	}
-	return (NULL);
+	return (errno);
 }
