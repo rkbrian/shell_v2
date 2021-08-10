@@ -25,9 +25,9 @@ extern char **environ;
  */
 typedef struct command_line_database
 {
-	char **token_arr;
-	char *cmd_head;
-	char *op;
+	char **token_arr = NULL;
+	char *cmd_head = NULL;
+	char *op = NULL;
 	int input_fd;
 	int output_fd;
 	struct command_line_database *next;
@@ -41,7 +41,7 @@ typedef struct command_line_database
 typedef struct operators
 {
 	char *op;
-	int (*func)(cmd_db *);
+	int (*func)(cmd_db *, char *out_token);
 } op_list;
 
 /* puts and putchar */
@@ -66,7 +66,7 @@ char *_strdup(const char *str);
 /* execute function */
 void execute(cmd_db *head, char *buffer, char **argv);
 void changedir(char **command_array, char *buffer);
-void op_selector(cmd_op_list *arglist, char *args);
+void op_selector(cmd_db *arglist, char *out_token);
 /* environmental varriable */
 char *_getenv(const char *name);
 int dir_num(char *env_path);
@@ -83,14 +83,14 @@ int check_builtins(char **command_array, char *buffer);
 void print_the_env(void);
 void _getoutof(char **command_array, char *buffer);
 /* stream redirections */
-int func_tofile(cmd_db *arglist);
-int func_addtofile(cmd_db *arglist);
-int func_fromfile(cmd_db *arglist);
-int func_heredoc(cmd_db *arglist);
+int func_tofile(cmd_db *arglist, char *out_token);
+int func_addtofile(cmd_db *arglist, char *out_token);
+int func_fromfile(cmd_db *arglist, char *out_token);
+int func_heredoc(cmd_db *arglist, char *out_token);
+int func_pipeline(cmd_db *arglist, char *out_token);
 /* command operators */
-int func_pipeline(cmd_db *arglist);
-int func_separate(cmd_db *arglist);
-int func_and(cmd_db *arglist);
-int func_or(cmd_db *arglist);
+/* int func_separate(cmd_db *arglist); */
+/* int func_and(cmd_db *arglist); */
+/* int func_or(cmd_db *arglist); */
 
 #endif

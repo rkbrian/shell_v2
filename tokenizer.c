@@ -4,7 +4,6 @@
  * create_node - function to create new node of command line database
  * @t_array: token array
  * @op: operator token
- * @
  * Return: command line database node
  */
 cmd_db *create_node(char **t_array, char *op)
@@ -19,7 +18,10 @@ cmd_db *create_node(char **t_array, char *op)
 		node->token_arr[i] = t_array[i], i++;
 	node->cmd_head = t_array[0];
 	if (op)
+	{
 		node->op = op;
+		node->input_fd = STDIN_FILENO;
+	}
 	else
 		node->op = NULL;
 	node->next = NULL;
@@ -50,7 +52,7 @@ char **tokenize(char *str)
 		{
 			if (_strcmp(token, proc_op[j]) == 0)
 			{
-				token_col[i] = NULL, current = create_node(token_col, token);
+				token_col[i] = NULL, current = create_node(token_col, proc_op[j]);
 				if (headflag == 0)
 					head = current, headflag = 1;
 				current = current->next, token_col = NULL, i = 0;

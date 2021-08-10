@@ -9,7 +9,7 @@
 int main(int argc __attribute__((unused)), char **argv)
 {
 	char *buffer = NULL;
-	char **command_array = NULL;
+	cmd_db *current = NULL;
 	size_t size;
 	ssize_t line_size;
 
@@ -26,19 +26,19 @@ int main(int argc __attribute__((unused)), char **argv)
 			free(buffer);
 			exit(EXIT_SUCCESS);
 		}
-		command_array = tokenize(buffer);
-		if (!command_array)
+		current = tokenize(buffer);
+		if (!current)
 		{
 			free(buffer);
-			free_token(command_array);
+			free_db(current);
 			exit(EXIT_SUCCESS);
 		}
-		execute(command_array, buffer, argv);
+		execute(current, buffer, argv);
 		size = 0;
 		buffer = NULL;
 		if (isatty(STDIN_FILENO))
 			write(STDOUT_FILENO, "$ ", 2);
 	}
-	free_token(command_array);
+	free_db(current);
 	exit(0);
 }
