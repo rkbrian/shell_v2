@@ -38,6 +38,7 @@ void execute(cmd_db *head, char *buffer, char **argv)
 			path_command = check_dir(current->token_arr, argv);
 			if (path_command != NULL)
 				execve(path_command, current->token_arr, NULL);
+			printf("execution succeeded\n");
 			current = current->next; /* (_strcmp(current->op, "||") or ";" == 0) */
 		}
 	}

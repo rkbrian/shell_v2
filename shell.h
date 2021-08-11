@@ -17,8 +17,7 @@ extern char **environ;
 
 /**
  * struct command_line_database - linked list db, divided by command operators
- * @token_arr: pointer to the token array of each operation
- * @cmd_head: pointer to the starting token of each operation
+ * @token_arr: pointer to the array of each operation, to be tokenized
  * @op: operator pointer
  * @input_fd: file descriptor for the input for the command
  * @output_fd: file descriptor for the output for the command
@@ -26,8 +25,7 @@ extern char **environ;
  */
 typedef struct command_line_database
 {
-	char **token_arr;
-	char *cmd_head;
+	char *token_arr;
 	char *op;
 	int input_fd;
 	int output_fd;
@@ -50,8 +48,9 @@ int _putchar(char c);
 void _puts(char *str);
 /* tokenizer set */
 cmd_db *create_node(char **t_array, char *op);
+cmd_db *db_maker(char *str);
 int command_count(char *str);
-cmd_db *tokenize(char *str);
+char **tokenize(char *str);
 void free_db(cmd_db *headnode);
 /* helper function set 1 */
 int _strcmp(char *s1, char *s2);
@@ -77,12 +76,11 @@ char *cmd_to_path(char *path, char *command);
 char *check_dir(char **command_array, char **argv);
 void no_file(char *cmd, char **argv);
 void no_file_sh_v(char *cmd, char **argv);
-/* handle ctrl-c */
-void handle_ctrl_c(int signal);
 /* builtins */
 int check_builtins(char **command_array, char *buffer);
 void print_the_env(void);
 void _getoutof(char **command_array, char *buffer);
+void handle_ctrl_c(int signal);
 /* stream redirections */
 int func_tofile(cmd_db *arglist, char *out_token);
 int func_addtofile(cmd_db *arglist, char *out_token);

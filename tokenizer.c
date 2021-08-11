@@ -3,26 +3,81 @@
 /**
  * create_node - function to create new node of command line database
  * @t_array: token array
- * @op: operator token
+ * @op_id: operator token index
+ * @starti: starting point of array
+ * @endi: end point of array
  * Return: command line database node
  */
-cmd_db *create_node(char **t_array, char *op)
+cmd_db *create_node(char *t_array, int op_id, int starti, int endi)
 {
 	cmd_db *node = NULL;
-	int i = 0;
+	int i = 0, j = 0;
+	char *proc_op[] = {">", ">>", "<", "<<", "|", ";", "&&", "||"};
 
 	node = malloc(sizeof(cmd_db));
 	if (node == NULL)
 		return (NULL);
-	while (t_array[i])
-		node->token_arr[i] = t_array[i], i++;
-	node->cmd_head = t_array[0];
-	if (op)
-		node->op = op;
-	else
-		node->op = NULL;
+	node->token_arr = malloc(sizeof(char) * (endi - starti + 1));
+	if (node->token_arr == NULL)
+		return (NULL);
+	for (i = 0, i < endi - starti; i++)
+		node->token_arr[i] = t_array[starti + i];
+	node->token_arr[i] = '\0';
+	for (; j < 8; j++)
+	{
+		if (op_id == j)
+			node->op = proc_op[j];
+		else
+			node->op = NULL;
+	}
 	node->next = NULL;
 	return (node);
+}
+
+/**
+ * db_maker - find command operators and make command databasex
+ * @str: command string
+ */
+cmd_db *db_maker(char *str)
+{
+	int long_len, k = 0, oid, stri = 0, headflag = 0;
+	cmd_db *cur = NULL, *head = NULL;
+
+	long_len = _strlen(str);
+	while (k < long_len)
+	{
+		if (str[k] == '>')
+		{
+			if (str[k + 1] == '>')
+				oid = 1, cur = create_node(str, oid, stri, k), stri = k + 2, headflag++;
+			else
+				oid = 0, cur = create_node(str, oid, stri, k), stri = k + 1, headflag++;
+		}
+		else if (str[k] == '<')
+		{
+			if (str[k + 1] == '<')
+				oid = 3, cur = create_node(str, oid, stri, k), stri = k + 2, headflag++;
+			else
+				oid = 2, cur = create_node(str, oid, stri, k), stri = k + 1, headflag++;
+		}
+		else if (str[k] == '|')
+		{
+			if (str[k + 1] == '|')
+				oid = 7, cur = create_node(str, oid, stri, k), stri = k + 2, headflag++;
+			else
+				oid = 4, cur = create_node(str, oid, stri, k), stri = k + 1, headflag++;
+		}
+		else if (str[k] == ';')
+			oid = 5, cur = create_node(str, oid, stri, k), stri = k + 1, headflag++;
+		else if (str[k] == '&' && str[k + 1] == '&')
+			oid = 6, cur = create_node(str, oid, stri, k), stri = k + 2, headflag++;
+		if (headflag == 1)
+			head = cur, cur = cur->next, headflag = 2;
+		else if (headflag > 2)
+			cur = cur->next, headflag = 2;
+		k++;
+	}
+	return (head);
 }
 
 /**
@@ -30,32 +85,25 @@ cmd_db *create_node(char **t_array, char *op)
  * @str: input commands
  * Return: array of tokenized commands
  */
-cmd_db *tokenize(char *str)
+char **tokenize(char *str)
 {
-	char *token = NULL, **token_col = NULL, **temp = NULL;
-	char *proc_op[] = {">", ">>", "<", "<<", "|", ";", "&&", "||"};
-	int size = 0, i = 0, j = 0, headflag = 0, k = 0;
-	cmd_db *current = NULL, *head = NULL;
+	char *token = NULL;
+	char **token_col = NULL;
+	int size = 0, i = 0;
 
-	str[_strlen(str) - 1] = '\0', size = command_count(str);
+	str[_strlen(str) - 1] = '\0';
+	size = command_count(str);
 	if (size == 0)
 		return (NULL);
 	token_col = malloc((sizeof(char *)) * (size + 1));
 	if (!token_col)
-		return (NULL);
-	while ((token = strtok(str, " ")))
 	{
-		for (; proc_op[j] != NULL; j++)
-		{
-			if (_strcmp(token, proc_op[j]) == 0)
-			{
-				temp[k] = NULL, current = create_node(temp, proc_op[j]);
-				if (headflag == 0)
-					head = current, headflag = 1;
-				current = current->next, temp = NULL, k = 0;
-				break;
-			}
-		}
+		free(token_col);
+		return (NULL);
+	}
+	token = strtok(str, " ");
+	while (token)
+	{
 		token_col[i] = malloc(_strlen(token) + 1);
 		if (token_col[i] == NULL)
 		{
@@ -64,11 +112,12 @@ cmd_db *tokenize(char *str)
 			free(token_col);
 			return (NULL);
 		}
-		_strncpy(token_col[i], token, _strlen(token) + 1), temp[k] = token_col[i];
-		token = strtok(NULL, " "), i++, k++;
+		_strncpy(token_col[i], token, _strlen(token) + 1);
+		token = strtok(NULL, " ");
+		i++;
 	}
-	token_col[i] = NULL, current = create_node(token_col, NULL);
-	return (head);
+	token_col[i] = NULL;
+	return (token_col);
 }
 
 /**
@@ -92,10 +141,6 @@ int command_count(char *str)
 }
 
 /**
- * spacesballs - adding space in empty strings
- */
-
-/**
  * free_db - function to free malloc of ptr to tokenized command array
  * @headnode: tokenized command struct
  */
@@ -108,9 +153,8 @@ void free_db(cmd_db *headnode)
 		return;
 	while (headnode)
 	{
-		headnode->cmd_head = NULL;
-		for (i = 0; headnode->token_arr[i] != NULL; i++)
-			free(headnode->token_arr[i]);
+		free(headnode->token_arr);
+		headnode->op = NULL;
 		tmp_node = headnode->next;
 		free(headnode);
 		headnode = tmp_node;
