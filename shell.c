@@ -1,11 +1,11 @@
 #include "shell.h"
+
 /**
  * main - main function of shell program
  * @argc: argument count
  * @argv: argument array
  * Return: 0
  */
-
 int main(int argc __attribute__((unused)), char **argv)
 {
 	char *buffer = NULL;
@@ -26,7 +26,7 @@ int main(int argc __attribute__((unused)), char **argv)
 			free(buffer);
 			exit(EXIT_SUCCESS);
 		}
-		current = tokenize(buffer);
+		current = db_maker(buffer);
 		if (!current)
 		{
 			free(buffer);

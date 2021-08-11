@@ -17,16 +17,20 @@ extern char **environ;
 
 /**
  * struct command_line_database - linked list db, divided by command operators
- * @token_arr: pointer to the array of each operation, to be tokenized
+ * @arr: pointer to the array of each operation, to be tokenized
  * @op: operator pointer
+ * @token_arr: pointer to the tokenized array of each operation
+ * @end_id: index of the token before operator
  * @input_fd: file descriptor for the input for the command
  * @output_fd: file descriptor for the output for the command
  * @next: points to the next node
  */
 typedef struct command_line_database
 {
-	char *token_arr;
+	char *arr;
 	char *op;
+	char **token_arr;
+	int end_id;
 	int input_fd;
 	int output_fd;
 	struct command_line_database *next;
@@ -47,7 +51,7 @@ typedef struct operators
 int _putchar(char c);
 void _puts(char *str);
 /* tokenizer set */
-cmd_db *create_node(char **t_array, char *op);
+cmd_db *create_node(char *t_array, int op_id, int starti, int endi);
 cmd_db *db_maker(char *str);
 int command_count(char *str);
 char **tokenize(char *str);

@@ -11,24 +11,30 @@
 cmd_db *create_node(char *t_array, int op_id, int starti, int endi)
 {
 	cmd_db *node = NULL;
-	int i = 0, j = 0;
+	int i = 0, j = 0, k = 0;
 	char *proc_op[] = {">", ">>", "<", "<<", "|", ";", "&&", "||"};
 
 	node = malloc(sizeof(cmd_db));
 	if (node == NULL)
 		return (NULL);
-	node->token_arr = malloc(sizeof(char) * (endi - starti + 1));
-	if (node->token_arr == NULL)
+	node->arr = malloc(sizeof(char) * (endi - starti + 1));
+	if (node->arr == NULL)
 		return (NULL);
 	for (i = 0, i < endi - starti; i++)
-		node->token_arr[i] = t_array[starti + i];
-	node->token_arr[i] = '\0';
+		node->arr[i] = t_array[starti + i];
+	node->arr[i] = '\0';
+	node->token_arr = tokenize(node->arr);
+	while (node->token_arr[k])
+		k++;
+	node->end_id = k - 1;
+	free(node->arr);
 	for (; j < 8; j++)
 	{
 		if (op_id == j)
+		{
 			node->op = proc_op[j];
-		else
-			node->op = NULL;
+			break;
+		}
 	}
 	node->next = NULL;
 	return (node);
@@ -37,6 +43,7 @@ cmd_db *create_node(char *t_array, int op_id, int starti, int endi)
 /**
  * db_maker - find command operators and make command databasex
  * @str: command string
+ * Return: head node of the command linked list
  */
 cmd_db *db_maker(char *str)
 {
