@@ -17,26 +17,22 @@ cmd_db *create_node(char *t_array, int op_id, int starti, int endi)
 	node = malloc(sizeof(cmd_db));
 	if (node == NULL)
 		return (NULL);
+	for (; j < 8; j++)
+	{
+		if (op_id == j)
+			node->op = proc_op[j];
+	}
 	node->arr = malloc(sizeof(char) * (endi - starti + 1));
 	if (node->arr == NULL)
 		return (NULL);
-	for (i = 0, i < endi - starti; i++)
+	for (i = 0; i < endi - starti; i++)
 		node->arr[i] = t_array[starti + i];
 	node->arr[i] = '\0';
 	node->token_arr = tokenize(node->arr);
 	while (node->token_arr[k])
 		k++;
-	node->end_id = k - 1;
-	free(node->arr);
-	for (; j < 8; j++)
-	{
-		if (op_id == j)
-		{
-			node->op = proc_op[j];
-			break;
-		}
-	}
-	node->next = NULL;
+	node->end_id = k - 1, node->op_id = op_id;
+	free(node->arr), node->next = NULL;
 	return (node);
 }
 
@@ -47,7 +43,7 @@ cmd_db *create_node(char *t_array, int op_id, int starti, int endi)
  */
 cmd_db *db_maker(char *str)
 {
-	int long_len, k = 0, oid, stri = 0, headflag = 0;
+	int long_len, k = 0, oid, si = 0, hflag = 0;
 	cmd_db *cur = NULL, *head = NULL;
 
 	long_len = _strlen(str);
@@ -56,32 +52,32 @@ cmd_db *db_maker(char *str)
 		if (str[k] == '>')
 		{
 			if (str[k + 1] == '>')
-				oid = 1, cur = create_node(str, oid, stri, k), stri = k + 2, headflag++;
+				oid = 1, cur = create_node(str, oid, si, k), si = k + 2, hflag++;
 			else
-				oid = 0, cur = create_node(str, oid, stri, k), stri = k + 1, headflag++;
+				oid = 0, cur = create_node(str, oid, si, k), si = k + 1, hflag++;
 		}
 		else if (str[k] == '<')
 		{
 			if (str[k + 1] == '<')
-				oid = 3, cur = create_node(str, oid, stri, k), stri = k + 2, headflag++;
+				oid = 3, cur = create_node(str, oid, si, k), si = k + 2, hflag++;
 			else
-				oid = 2, cur = create_node(str, oid, stri, k), stri = k + 1, headflag++;
+				oid = 2, cur = create_node(str, oid, si, k), si = k + 1, hflag++;
 		}
 		else if (str[k] == '|')
 		{
 			if (str[k + 1] == '|')
-				oid = 7, cur = create_node(str, oid, stri, k), stri = k + 2, headflag++;
+				oid = 7, cur = create_node(str, oid, si, k), si = k + 2, hflag++;
 			else
-				oid = 4, cur = create_node(str, oid, stri, k), stri = k + 1, headflag++;
+				oid = 4, cur = create_node(str, oid, si, k), si = k + 1, hflag++;
 		}
 		else if (str[k] == ';')
-			oid = 5, cur = create_node(str, oid, stri, k), stri = k + 1, headflag++;
+			oid = 5, cur = create_node(str, oid, si, k), si = k + 1, hflag++;
 		else if (str[k] == '&' && str[k + 1] == '&')
-			oid = 6, cur = create_node(str, oid, stri, k), stri = k + 2, headflag++;
-		if (headflag == 1)
-			head = cur, cur = cur->next, headflag = 2;
-		else if (headflag > 2)
-			cur = cur->next, headflag = 2;
+			oid = 6, cur = create_node(str, oid, si, k), si = k + 2, hflag++;
+		if (hflag == 1)
+			head = cur, cur = cur->next, hflag = 2;
+		else if (hflag > 2)
+			cur = cur->next, hflag = 2;
 		k++;
 	}
 	return (head);
@@ -160,8 +156,15 @@ void free_db(cmd_db *headnode)
 		return;
 	while (headnode)
 	{
-		free(headnode->token_arr);
+		if (headnode->token_arr)
+		{
+			for (i = 0; headnode->token_arr[i] != NULL; i++)
+				free(headnode->token_arr[i]);
+			free(headnode->token_arr);
+		}
+		headnode->arr = NULL;
 		headnode->op = NULL;
+
 		tmp_node = headnode->next;
 		free(headnode);
 		headnode = tmp_node;

@@ -3,127 +3,102 @@
 /**
  * func_tofile - write or rewrite stream to a file
  * @arglist: linked list of commands
- * Return: -1 for errno, 1 for stdout
+ * @out_token: token on the right of the redirector
+ * Return: exit code
  */
 int func_tofile(cmd_db *arglist, char *out_token)
 {
-	int fd;
-	ssize_t wri, i, j;
-	cmd_db *current = NULL;
+	int src, fd, excode;
+	int status = 0;
 
-	current = arglist;
-	if (current == NULL || out_token == NULL)
-		return (-1);
+	src = dup(STDOUT_FILENO);
 	fd = open(out_token, O_CREAT | O_TRUNC | O_WRONLY);
-	if (fd == -1)
-		return (-1);
-	if (current->token_arr == NULL)
+	if (!fork())
 	{
-		close(fd);
-		return (1);
+		execve(arglist->token_arr[0], arglist->token_arr, NULL);
+		perror(NULL);
+		exit(2);
 	}
-	for (j = 0; current->token_arr[j] != NULL; j++)
-	{
-	}
-	for (i = 0; current->token_arr[j][i] != '\0'; i++)
-	{
-	}
-	wri = write(fd, current->token_arr[j], i);
-	if (wri == -1)
-		return (-1);
+	wait(&status);
+	excode = WEXITSTATUS(status);
 	close(fd);
-	return (1);
+
+	dup2(src, STDOUT_FILENO);
+	close(src);
+	return (excode);
 }
 
 /**
  * func_addtofile - add stream to a file
  * @arglist: linked list of commands
- * Return: -1 for errno, 1 for stdout
+ * @out_token: token on the right of the redirector
+ * Return: exit code
  */
 int func_addtofile(cmd_db *arglist, char *out_token)
 {
-	int fd;
-	ssize_t wri, i, j;
-	cmd_db *current = NULL;
+	int src, fd, excode;
+	int status = 0;
 
-	current = arglist;
-	if (current == NULL || out_token == NULL)
-		return (-1);
-	fd = open(out_token, O_WRONLY | O_APPEND);
-	if (fd == -1)
-		return (-1);
-	if (current->token_arr == NULL)
+	src = dup(STDOUT_FILENO);
+	fd = open(out_token, O_CREAT | O_WRONLY | O_APPEND);
+	if (!fork())
 	{
-		close(fd);
-		return (1);
+		execve(arglist->token_arr[0], arglist->token_arr, NULL);
+		perror(NULL);
+		exit(2);
 	}
-	for (j = 0; current->token_arr[j] != NULL; j++)
-	{
-	}
-	for (i = 0; current->token_arr[j][i] != '\0'; i++)
-	{
-	}
-	wri = write(fd, current->token_arr[j], i);
-	if (wri == -1)
-		return (-1);
+	wait(&status);
+	excode = WEXITSTATUS(status);
 	close(fd);
-	return (1);
+
+	dup2(src, STDOUT_FILENO);
+	close(src);
+	return (excode);
 }
 
 /**
  * func_fromfile - acquire all streams from a file
  * @arglist: linked list of commands
- * Return: 0 or 1
+ * @out_token: token on the right of the redirector
+ * Return: exit code
  */
 int func_fromfile(cmd_db *arglist, char *out_token)
 {
-	ssize_t fd, len, wri;
-	char *buffalo;
-	cmd_db *current = NULL;
-	int j;
+	int src, fd, excode;
+	int status = 0;
 
-	current = arglist;
-	if (current == NULL || out_token == NULL)
-		return (0);
+	src = dup(STDIN_FILENO);
 	fd = open(out_token, O_RDONLY);
-	for (j = 0; current->token_arr[j] != NULL; j++)
-	{
-	}
-	buffalo = malloc(sizeof(char) * 1024);
-	if (buffalo == NULL)
-		return (0);
 	if (fd == -1)
+		return (2);
+	dup2(fd, STDIN_FILENO);
+	if (!fork())
 	{
-		free(buffalo);
-		return (0);
+		execve(arglist->token_arr[0], arglist->token_arr, NULL);
+		perror(NULL);
+		exit(2);
 	}
-	len = read(fd, buffalo, 1023);
-	if (len == -1)
-	{
-		free(buffalo), close(fd);
-		return (0);
-	}
-	wri = write(STDOUT_FILENO, buffalo, len);
-	if (wri == -1)
-	{
-		free(buffalo), close(fd);
-		return (0);
-	}
-	free(buffalo), close(fd);
-	return (len);
+	wait(&status);
+	excode = WEXITSTATUS(status);
+	close(fd);
+
+	dup2(src, STDIN_FILENO);
+	close(src);
+	return (excode);
 }
 
 /**
  * func_heredoc - acquire all streams ends at a given stream
  * @arglist: linked list of commands
- * Return: 0 or 1
+ * @out_token: token on the right of the redirector
+ * Return: exit code
  */
 /* int func_heredoc(cmd_db *arglist, char *out_token) */
 
 /**
- * func_pipeline - function to pipe results of left to right
+ * func_pip - function to pipe results of left to right
  * @arglist: linked list of commands
-
- * Return: 0 or 1
+ * @out_token: token on the right of the redirector
+ * Return: exit code
  */
-/* int func_pipeline(cmd_db *arglist, char *out_token) */
+/* int func_pip(cmd_db *arglist, char *out_token) */

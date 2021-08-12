@@ -10,44 +10,58 @@ void execute(cmd_db *head, char *buffer, char **argv)
 {
 	pid_t pid;
 	char *path_command = NULL;
-	struct stat fstat;
 	int status;
 	cmd_db *current = NULL, *tmp = NULL;
 
-	current = head;
-	pid = fork();
+	current = head, pid = fork();
 	if (pid == -1)
 	{
 		perror("Error\n");
 		exit(EXIT_FAILURE);
 	}
-	if (pid == 0)
+	while (current)
 	{
-		while (current)
+		check_builtins(current->token_arr, buffer), tmp = current->next;
+		if (current->op_id < 5)
 		{
-			check_builtins(current->token_arr, buffer), tmp = current->next;
-			current->output_fd = op_process(current, tmp->cmd_head);
-			if (stat(current->cmd_head, &fstat) == 0)
-			{
-				execve(current->cmd_head, current->token_arr, NULL);
-				if (_strcmp(current->op, "||") == 0)
-					break;
-			}
-			else if (_strcmp(current->op, "&&") == 0)
-				break;
-			path_command = check_dir(current->token_arr, argv);
-			if (path_command != NULL)
-				execve(path_command, current->token_arr, NULL);
-			printf("execution succeeded\n");
-			current = current->next; /* (_strcmp(current->op, "||") or ";" == 0) */
+			adjust_execute(current, tmp);
+			while (tmp->op[0] == '|')
+				current = current->next, tmp = current->next, adjust_execute(current, tmp);
 		}
+		else if (current->op_id == 6 && current->excode == 0)
+			tmp->excode = 0;
+		else if (current->op_id == 6 && current->excode != 0)
+			tmp->excode = 1;
+		else if (current->op_id == 7 && current->excode == 0)
+			tmp->excode = 1;
+		else if (current->op_id == 7 && current->excode != 0)
+			tmp->excode = 0;
+		path_command = check_dir(current->token_arr, argv);
+		if (path_command != NULL)
+			execve(path_command, current->token_arr, NULL);
+		current = current->next;
 	}
-	else
+	wait(&status);
+	if (_strcmp(current->token_arr[0], "exit") == 0)
+		_getoutof(current->token_arr, buffer);
+	free_db(head), free(buffer);
+}
+
+/**
+ * adjust_execute - adjust database and then execute
+ * @current: current node
+ * @tmp: next node
+ */
+void adjust_execute(cmd_db *current, cmd_db *tmp)
+{
+	struct stat fstat;
+
+	if (current->arr == NULL && tmp->op[0] != '|')
 	{
-		wait(&status);
-		if (_strcmp(current->cmd_head, "exit") == 0)
-			_getoutof(current->token_arr, buffer);
-		free_db(head), free(buffer);
+		if (stat(current->token_arr[0], &fstat) == 0)
+			execve(current->token_arr[0], current->token_arr, NULL);
+		current->excode = op_process(current, tmp->token_arr[0]);
+		tmp->arr = "used";
 	}
 }
 

@@ -21,8 +21,10 @@ extern char **environ;
  * @op: operator pointer
  * @token_arr: pointer to the tokenized array of each operation
  * @end_id: index of the token before operator
- * @input_fd: file descriptor for the input for the command
- * @output_fd: file descriptor for the output for the command
+ * @op_id: index of the operator in the list
+ * input_fd file descriptor for the input for the command
+ * output_fd file descriptor for the output for the command
+ * @excode: exit code
  * @next: points to the next node
  */
 typedef struct command_line_database
@@ -31,8 +33,10 @@ typedef struct command_line_database
 	char *op;
 	char **token_arr;
 	int end_id;
-	int input_fd;
-	int output_fd;
+	int op_id;
+	/* int input_fd;*/
+	/* int output_fd;*/
+	int excode;
 	struct command_line_database *next;
 } cmd_db;
 
@@ -71,6 +75,7 @@ char *_strdup(const char *str);
 void execute(cmd_db *head, char *buffer, char **argv);
 void changedir(char **command_array, char *buffer);
 int op_process(cmd_db *arglist, char *out_token);
+void adjust_execute(cmd_db *current, cmd_db *tmp);
 /* environmental varriable */
 char *_getenv(const char *name);
 int dir_num(char *env_path);
@@ -88,7 +93,7 @@ void handle_ctrl_c(int signal);
 /* stream redirections */
 int func_tofile(cmd_db *arglist, char *out_token);
 int func_addtofile(cmd_db *arglist, char *out_token);
-/* int func_fromfile(cmd_db *arglist, char *out_token); */
+int func_fromfile(cmd_db *arglist, char *out_token);
 /* int func_heredoc(cmd_db *arglist, char *out_token); */
 /* int func_pipeline(cmd_db *arglist, char *out_token); */
 /* command operators */
