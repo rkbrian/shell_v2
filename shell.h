@@ -86,9 +86,9 @@ char *check_dir(char **command_array, char **argv);
 void no_file(char *cmd, char **argv);
 void no_file_sh_v(char *cmd, char **argv);
 /* builtins */
-int check_builtins(char **command_array, char *buffer);
+int check_builtins(cmd_db *head, char *buffer);
 void print_the_env(void);
-void _getoutof(char **command_array, char *buffer);
+void _getoutof(cmd_db *head, char *buffer);
 void handle_ctrl_c(int signal);
 /* stream redirections */
 int func_tofile(cmd_db *arglist, char *out_token);

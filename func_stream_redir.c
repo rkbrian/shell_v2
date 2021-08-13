@@ -24,7 +24,7 @@ int func_tofile(cmd_db *arglist, char *out_token)
 	}
 	if (pid == 0)
 	{
-		check_builtins(arglist->token_arr, arglist->arr);
+		check_builtins(arglist, arglist->arr);
 		if (stat(arglist->token_arr[0], &fstat) == 0)
 			execve(arglist->token_arr[0], arglist->token_arr, NULL);
 	}
@@ -64,7 +64,7 @@ int func_addtofile(cmd_db *arglist, char *out_token)
 	}
 	if (pid == 0)
 	{
-		check_builtins(arglist->token_arr, arglist->arr);
+		check_builtins(arglist, arglist->arr);
 		if (stat(arglist->token_arr[0], &fstat) == 0)
 			execve(arglist->token_arr[0], arglist->token_arr, NULL);
 	}
@@ -105,7 +105,7 @@ int func_fromfile(cmd_db *arglist, char *out_token)
 	}
 	if (pid == 0)
 	{
-		check_builtins(arglist->token_arr, arglist->arr);
+		check_builtins(arglist, arglist->arr);
 		if (stat(arglist->token_arr[0], &fstat) == 0)
 			execve(arglist->token_arr[0], arglist->token_arr, NULL);
 	}

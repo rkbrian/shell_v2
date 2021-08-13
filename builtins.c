@@ -2,29 +2,29 @@
 
 /**
  * check_builtins - built-in functions for special commands
- * @command_array: input command
+ * @head: input command database
  * @buffer: buffer allocated for input command
  * Return: 0
  */
-int check_builtins(char **command_array, char *buffer)
+int check_builtins(cmd_db *head, char *buffer)
 {
 	char *builtins[] = { "exit", "env", "cd", NULL };
 	int i = 0;
 
 	while (builtins[i])
 	{
-		if (_strcmp(command_array[0], builtins[i]) == 0)
+		if (_strcmp(head->token_arr[0], builtins[i]) == 0)
 		{
 			switch (i)
 			{
 			case 0:
-				_getoutof(command_array, buffer);
+				_getoutof(head, buffer);
 				break;
 			case 1:
 				print_the_env();
 				return (1);
 			case 2:
-				changedir(command_array, buffer);
+				changedir(head->token_arr, buffer);
 				return (1);
 			}
 		}
@@ -49,16 +49,13 @@ void print_the_env(void)
 
 /**
  * _getoutof - function to exit shell in both child and parent processes
- * @command_array: command array
+ * @head: input command database
  * @buffer: input buffer
  */
-void _getoutof(char **command_array, char *buffer)
+void _getoutof(cmd_db *head, char *buffer)
 {
-	int i;
-
-	for (i = 0; command_array[i] != NULL; i++)
-		free(command_array[i]);
 	free(buffer);
+	free_db(head);
 	exit(EXIT_SUCCESS);
 }
 

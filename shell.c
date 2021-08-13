@@ -24,6 +24,7 @@ int main(int argc __attribute__((unused)), char **argv)
 			if (isatty(STDIN_FILENO))
 				write(STDOUT_FILENO, "\n", 1);
 			free(buffer);
+			free_db(current);
 			exit(EXIT_SUCCESS);
 		}
 		current = db_maker(buffer);
@@ -35,11 +36,11 @@ int main(int argc __attribute__((unused)), char **argv)
 		}
 		execute(current, buffer, argv);
 		size = 0;
+		free_db(current);
 		buffer = NULL;
 		if (isatty(STDIN_FILENO))
 			write(STDOUT_FILENO, "$ ", 2);
 	}
-	if (current)
-		free_db(current);
+	free_db(current);
 	exit(0);
 }
