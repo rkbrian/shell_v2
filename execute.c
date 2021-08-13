@@ -8,60 +8,65 @@
  */
 void execute(cmd_db *head, char *buffer, char **argv)
 {
-	pid_t pid;
-	char *path_command = NULL;
-	int status;
 	cmd_db *current = NULL, *tmp = NULL;
 
-	current = head, pid = fork();
+	current = head;
+	while (current)
+	{
+		tmp = current->next;
+		if (current->op_id < 5)
+		{
+			current->excode = op_process(current, tmp->token_arr[0]);
+			tmp->excode = current->excode;
+		}
+		else if (current->op_id == 6 && current->excode == 0)
+			tmp->excode = 0, sub_exe(current, buffer, argv);
+		else if (current->op_id == 6 && current->excode != 0)
+			tmp->excode = 1, sub_exe(current, buffer, argv);
+		else if (current->op_id == 7 && current->excode == 0)
+			tmp->excode = 1, sub_exe(current, buffer, argv);
+		else if (current->op_id == 7 && current->excode != 0)
+			tmp->excode = 0, sub_exe(current, buffer, argv);
+		else if (current->op_id == 100)
+			tmp = NULL, sub_exe(current, buffer, argv);
+		current = current->next;
+	}
+	free_db(head), free(buffer);
+}
+
+/**
+ * sub_exe- adjust database and then execute
+ * @current: current node
+ * @buffer: buffer allocated for input command
+ * @argv: argument array
+ */
+void sub_exe(cmd_db *current, char *buffer, char **argv)
+{
+	pid_t pid;
+	char *path_command = NULL;
+	struct stat fstat;
+	int status;
+
+	pid = fork();
 	if (pid == -1)
 	{
 		perror("Error\n");
 		exit(EXIT_FAILURE);
 	}
-	while (current)
+	if (pid == 0)
 	{
-		check_builtins(current->token_arr, buffer), tmp = current->next;
-		if (current->op_id < 5)
-		{
-			adjust_execute(current, tmp);
-			while (tmp->op[0] == '|')
-				current = current->next, tmp = current->next, adjust_execute(current, tmp);
-		}
-		else if (current->op_id == 6 && current->excode == 0)
-			tmp->excode = 0;
-		else if (current->op_id == 6 && current->excode != 0)
-			tmp->excode = 1;
-		else if (current->op_id == 7 && current->excode == 0)
-			tmp->excode = 1;
-		else if (current->op_id == 7 && current->excode != 0)
-			tmp->excode = 0;
+		check_builtins(current->token_arr, buffer);
+		if (stat(current->token_arr[0], &fstat) == 0)
+			execve(current->token_arr[0], current->token_arr, NULL);
 		path_command = check_dir(current->token_arr, argv);
 		if (path_command != NULL)
 			execve(path_command, current->token_arr, NULL);
-		current = current->next;
 	}
-	wait(&status);
-	if (_strcmp(current->token_arr[0], "exit") == 0)
-		_getoutof(current->token_arr, buffer);
-	free_db(head), free(buffer);
-}
-
-/**
- * adjust_execute - adjust database and then execute
- * @current: current node
- * @tmp: next node
- */
-void adjust_execute(cmd_db *current, cmd_db *tmp)
-{
-	struct stat fstat;
-
-	if (current->arr == NULL && tmp->op[0] != '|')
+	else
 	{
-		if (stat(current->token_arr[0], &fstat) == 0)
-			execve(current->token_arr[0], current->token_arr, NULL);
-		current->excode = op_process(current, tmp->token_arr[0]);
-		tmp->arr = "used";
+		wait(&status);
+		if (_strcmp(current->token_arr[0], "exit") == 0)
+			_getoutof(current->token_arr, buffer);
 	}
 }
 
@@ -90,15 +95,15 @@ void changedir(char **command_array, char *buffer)
  * op_process - function to check if it is an operator for process
  * @arglist: linked list of commands
  * @out_token: file name in command line
- * Return: output fd
+ * Return: exit code
  */
 int op_process(cmd_db *arglist, char *out_token)
 {
-	int output_fd, j;
+	int excode, j;
 	op_list opf[] = {
 		{">", func_tofile},
 		{">>", func_addtofile},
-		/*{"<", func_fromfile},*/
+		{"<", func_fromfile},
 		/*{"<<", func_heredoc},*/
 		/*{"|", func_pipeline},*/
 		{NULL, NULL}
@@ -107,8 +112,8 @@ int op_process(cmd_db *arglist, char *out_token)
 	{
 		if (_strcmp(opf[j].op, arglist->op) == 0)
 		{
-			output_fd = opf[j].func(arglist, out_token);
-			return (output_fd);
+			excode = opf[j].func(arglist, out_token);
+			return (excode);
 		}
 	}
 	return (errno);

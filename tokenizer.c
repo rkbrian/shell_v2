@@ -3,7 +3,7 @@
 /**
  * create_node - function to create new node of command line database
  * @t_array: token array
- * @op_id: operator token index
+ * @op_id: operator token index, 100 for end of commands
  * @starti: starting point of array
  * @endi: end point of array
  * Return: command line database node
@@ -17,10 +17,15 @@ cmd_db *create_node(char *t_array, int op_id, int starti, int endi)
 	node = malloc(sizeof(cmd_db));
 	if (node == NULL)
 		return (NULL);
-	for (; j < 8; j++)
+	if (op_id == 100)
+		node->op = NULL;
+	else
 	{
-		if (op_id == j)
-			node->op = proc_op[j];
+		for (; j < 8; j++)
+		{
+			if (op_id == j)
+				node->op = proc_op[j];
+		}
 	}
 	node->arr = malloc(sizeof(char) * (endi - starti + 1));
 	if (node->arr == NULL)
@@ -32,7 +37,8 @@ cmd_db *create_node(char *t_array, int op_id, int starti, int endi)
 	while (node->token_arr[k])
 		k++;
 	node->end_id = k - 1, node->op_id = op_id;
-	free(node->arr), node->next = NULL;
+	node->next = NULL;
+	/* printf("node!\n"); */
 	return (node);
 }
 
@@ -74,6 +80,8 @@ cmd_db *db_maker(char *str)
 			oid = 5, cur = create_node(str, oid, si, k), si = k + 1, hflag++;
 		else if (str[k] == '&' && str[k + 1] == '&')
 			oid = 6, cur = create_node(str, oid, si, k), si = k + 2, hflag++;
+		else if (k == long_len - 1)
+			oid = 100, cur = create_node(str, oid, si, k), cur->next = NULL;
 		if (hflag == 1)
 			head = cur, cur = cur->next, hflag = 2;
 		else if (hflag > 2)
@@ -162,7 +170,8 @@ void free_db(cmd_db *headnode)
 				free(headnode->token_arr[i]);
 			free(headnode->token_arr);
 		}
-		headnode->arr = NULL;
+		if (headnode->arr)
+			free(headnode->arr);
 		headnode->op = NULL;
 
 		tmp_node = headnode->next;

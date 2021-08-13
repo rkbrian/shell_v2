@@ -39,6 +39,7 @@ int main(int argc __attribute__((unused)), char **argv)
 		if (isatty(STDIN_FILENO))
 			write(STDOUT_FILENO, "$ ", 2);
 	}
-	free_db(current);
+	if (current)
+		free_db(current);
 	exit(0);
 }

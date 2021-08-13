@@ -75,7 +75,7 @@ char *_strdup(const char *str);
 void execute(cmd_db *head, char *buffer, char **argv);
 void changedir(char **command_array, char *buffer);
 int op_process(cmd_db *arglist, char *out_token);
-void adjust_execute(cmd_db *current, cmd_db *tmp);
+void sub_exe(cmd_db *current, char *buffer, char **argv);
 /* environmental varriable */
 char *_getenv(const char *name);
 int dir_num(char *env_path);
