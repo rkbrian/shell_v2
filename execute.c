@@ -23,9 +23,9 @@ void execute(cmd_db *head, char *buffer, char **argv)
 			tmp->excode = 0, sub_exe(current, buffer, argv);
 		else if (current->op_id == 6 && current->excode != 0)
 			tmp->excode = 1, sub_exe(current, buffer, argv);
-		else if (current->op_id == 7 && current->excode == 0)
+		else if (current->op_id == 5 && current->excode == 0)
 			tmp->excode = 1, sub_exe(current, buffer, argv);
-		else if (current->op_id == 7 && current->excode != 0)
+		else if (current->op_id == 5 && current->excode != 0)
 			tmp->excode = 0, sub_exe(current, buffer, argv);
 		else if (current->op_id == 100)
 			tmp = NULL, sub_exe(current, buffer, argv);
@@ -108,6 +108,7 @@ int op_process(cmd_db *arglist, char *out_token)
 		/*{"|", func_pipeline},*/
 		{NULL, NULL}
 	};
+
 	for (j = 0; opf[j].op != NULL; j++)
 	{
 		if (_strcmp(opf[j].op, arglist->op) == 0)

@@ -12,7 +12,7 @@ cmd_db *create_node(char *t_array, int op_id, int starti, int endi)
 {
 	cmd_db *node = NULL;
 	int i = 0, j = 0, k = 0;
-	char *proc_op[] = {">", ">>", "<", "<<", "|", ";", "&&", "||"};
+	char *proc_op[] = {">", ">>", "<", "<<", "|", "||", "&&", ";"};
 
 	node = malloc(sizeof(cmd_db));
 	if (node == NULL)
@@ -30,7 +30,7 @@ cmd_db *create_node(char *t_array, int op_id, int starti, int endi)
 	node->arr = malloc(sizeof(char) * (endi - starti + 1));
 	if (node->arr == NULL)
 		return (NULL);
-	for (i = 0; i < endi - starti; i++)
+	for (i = 0; i <= endi - starti; i++)
 		node->arr[i] = t_array[starti + i];
 	node->arr[i] = '\0';
 	node->token_arr = tokenize(node->arr);
@@ -38,7 +38,6 @@ cmd_db *create_node(char *t_array, int op_id, int starti, int endi)
 		k++;
 	node->end_id = k - 1, node->op_id = op_id;
 	node->next = NULL;
-	/* printf("node!\n"); */
 	return (node);
 }
 
@@ -50,7 +49,7 @@ cmd_db *create_node(char *t_array, int op_id, int starti, int endi)
 cmd_db *db_maker(char *str)
 {
 	int long_len, k = 0, oid, si = 0, hflag = 0;
-	cmd_db *cur = NULL, *head = NULL;
+	cmd_db *cur = NULL, *head = NULL, *prev = NULL;
 
 	long_len = _strlen(str);
 	while (k < long_len)
@@ -72,20 +71,20 @@ cmd_db *db_maker(char *str)
 		else if (str[k] == '|')
 		{
 			if (str[k + 1] == '|')
-				oid = 7, cur = create_node(str, oid, si, k), si = k + 2, hflag++;
+				oid = 5, cur = create_node(str, oid, si, k), si = k + 2, hflag++;
 			else
 				oid = 4, cur = create_node(str, oid, si, k), si = k + 1, hflag++;
 		}
 		else if (str[k] == ';')
-			oid = 5, cur = create_node(str, oid, si, k), si = k + 1, hflag++;
+			oid = 7, cur = create_node(str, oid, si, k), si = k + 1, hflag++;
 		else if (str[k] == '&' && str[k + 1] == '&')
 			oid = 6, cur = create_node(str, oid, si, k), si = k + 2, hflag++;
 		else if (k == long_len - 1)
-			oid = 100, cur = create_node(str, oid, si, k), cur->next = NULL;
-		if (hflag == 1)
-			head = cur, cur = cur->next, hflag = 2;
-		else if (hflag > 2)
-			cur = cur->next, hflag = 2;
+			oid = 100, cur = create_node(str, oid, si, k), cur->next = NULL, hflag++;
+		if (hflag == 1) /* head node */
+			head = cur, prev = cur, hflag = 2;
+		else if (hflag > 2) /* linking process */
+		        prev->next = cur, prev = cur, hflag = 2;
 		k++;
 	}
 	return (head);
