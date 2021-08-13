@@ -84,7 +84,7 @@ cmd_db *db_maker(char *str)
 		if (hflag == 1) /* head node */
 			head = cur, prev = cur, hflag = 2;
 		else if (hflag > 2) /* linking process */
-		        prev->next = cur, prev = cur, hflag = 2;
+			prev->next = cur, prev = cur, hflag = 2;
 		k++;
 	}
 	return (head);

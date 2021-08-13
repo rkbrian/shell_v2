@@ -1,4 +1,4 @@
-.TH man 3 "15 April 2021" "1.0" "Simple_Shell"
+.TH man 3 "12 August 2021" "2.0" "shell_v2 man page"
 .SH NAME
 
 .B hsh
@@ -11,14 +11,16 @@
 
 .SH DESCRIPTION
 
-This is a simple shell created for a Holberton School Project. It was built to mimic some of the basic functionality of the original Unix shell.
+This is a simple shell created for a Holberton School Project. It was built to mimic some of the basic functionality of the original Unix shell, to handle file redirections, command separator and logical operators.
 
 .SH EXAMPLES
+echo hello
+ls > test ; ls>>test
 
 .B Basic Usage
 
 .IP \[bu]
-Install with command: git clone https://github.com/gnnrbachelor/simple_shell.
+Install with command: git clone https://github.com/rkbrian/shell_v2
 
 .IP \[bu]
 Compile using gcc -Wall -Werror -Wextra -pedantic *.c -o hsh.
