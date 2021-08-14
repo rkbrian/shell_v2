@@ -41,18 +41,12 @@ void no_file_sh_v(char *cmd, char **argv)
 {
 	char *buffer = NULL;
 	char *err = ": command not found\n";
-	int cmd_len = 0;
-	int err_len = 0;
-	int argv_len = 0;
-	int bufsize = 0;
-	int i = 0;
-	int j = 0;
-	int k = 0;
+	int cmd_len = 0, err_len = 0, argv_len = 0, bufsize = 0;
+	int i = 0, j = 0, k = 0;
 
 	cmd_len = _strlen(cmd);
 	err_len = _strlen(err);
 	argv_len = _strlen(argv[0]);
-
 	bufsize = cmd_len + err_len + (argv_len + 2);
 
 	buffer = malloc(sizeof(char) * bufsize);
@@ -62,15 +56,9 @@ void no_file_sh_v(char *cmd, char **argv)
 	for (i = 0; i < bufsize; i++)
 	{
 		while (i < argv_len)
-		{
-			buffer[i] = argv[0][i];
-			i++;
-		}
+			buffer[i] = argv[0][i], i++;
 		if (i == argv_len)
-		{
-			buffer[i] = ':';
-			buffer[++i] = ' ';
-		}
+			buffer[i] = ':', buffer[++i] = ' ';
 		else if (j < cmd_len)
 			buffer[i] = cmd[j++];
 		else if (k < err_len)

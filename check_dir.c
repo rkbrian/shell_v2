@@ -28,8 +28,6 @@ char *check_dir(char **command_array, char **argv)
 		}
 		i++;
 	}
-
 	no_file(command_array[0], argv);
-
 	return (NULL);
 }

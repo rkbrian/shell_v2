@@ -39,8 +39,7 @@ cmd_db *create_node(char *t_array, int op_id, int starti, int endi)
 	node->token_arr = tokenize(node->arr);
 	if (!node->token_arr)
 	{
-		free(node->arr);
-		free(node);
+		free(node->arr), free(node);
 		return (NULL);
 	}
 	while (node->token_arr[k])
@@ -64,19 +63,19 @@ cmd_db *db_maker(char *str)
 	for (; k < long_len; k++)
 	{
 		if (str[k] == '>' && str[k + 1] == '>')
-			oid = 1, cur = create_node(str, oid, si, k), si = k + 2, hflag++;
+			oid = 1, cur = create_node(str, oid, si, k), k++, si = k + 1, hflag++;
 		else if (str[k] == '>')
 			oid = 0, cur = create_node(str, oid, si, k), si = k + 1, hflag++;
 		else if (str[k] == '<' && str[k + 1] == '<')
-			oid = 3, cur = create_node(str, oid, si, k), si = k + 2, hflag++;
+			oid = 3, cur = create_node(str, oid, si, k), k++, si = k + 1, hflag++;
 		else if (str[k] == '<')
 			oid = 2, cur = create_node(str, oid, si, k), si = k + 1, hflag++;
 		else if (str[k] == '|' && str[k + 1] == '|')
-			oid = 5, cur = create_node(str, oid, si, k), si = k + 2, hflag++;
+			oid = 5, cur = create_node(str, oid, si, k), k++, si = k + 1, hflag++;
 		else if (str[k] == '|')
 			oid = 4, cur = create_node(str, oid, si, k), si = k + 1, hflag++;
 		else if (str[k] == '&' && str[k + 1] == '&')
-			oid = 7, cur = create_node(str, oid, si, k), si = k + 2, hflag++;
+			oid = 7, cur = create_node(str, oid, si, k), k++, si = k + 1, hflag++;
 		else if (str[k] == ';')
 			oid = 6, cur = create_node(str, oid, si, k), si = k + 1, hflag++;
 		else if (k == long_len - 1)

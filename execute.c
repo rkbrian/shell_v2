@@ -52,6 +52,7 @@ void sub_exe(cmd_db *current, char *buffer, char **argv)
 	char *path_command = NULL;
 	struct stat fstat;
 	int status;
+	cmd_db *tmp;
 
 	pid = fork();
 	if (pid == -1)
@@ -64,12 +65,16 @@ void sub_exe(cmd_db *current, char *buffer, char **argv)
 		check_builtins(current, buffer);
 		if (stat(current->token_arr[0], &fstat) == 0)
 			execve(current->token_arr[0], current->token_arr, NULL);
-		path_command = check_dir(current->token_arr, argv);
+		path_command = check_dir(current->token_arr, argv), tmp = current->next;
 		if (path_command != NULL)
 		{
 			execve(path_command, current->token_arr, NULL);
+			if (tmp)
+				tmp->statue = lstat((const char *)path_command, fstat);
 			free(path_command);
 		}
+		else if (tmp)
+			tmp->statue = -1;
 	}
 	else
 	{

@@ -22,7 +22,7 @@ extern char **environ;
  * @token_arr: pointer to the tokenized array of each operation
  * @end_id: index of the token before operator
  * @op_id: index of the operator in the list
- * input_fd file descriptor for the input for the command
+ * @statue: process status for next node process to check and wait for
  * output_fd file descriptor for the output for the command
  * @excode: exit code
  * @next: points to the next node
@@ -34,7 +34,7 @@ typedef struct command_line_database
 	char **token_arr;
 	int end_id;
 	int op_id;
-	/* int input_fd;*/
+	int statue;
 	/* int output_fd;*/
 	int excode;
 	struct command_line_database *next;

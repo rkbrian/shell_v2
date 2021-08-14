@@ -10,12 +10,15 @@ int func_tofile(cmd_db *arglist, char *out_token)
 {
 	pid_t pid;
 	struct stat fstat;
-	int status, src, fd, excode;
+	int status, src, fd, excode, gargoyle;
 
 	src = dup(STDOUT_FILENO);
 	fd = open(out_token, O_CREAT | O_TRUNC | O_WRONLY);
 	dup2(fd, STDOUT_FILENO);
 
+	gargoyle = arglist->statue;
+	if (gargoyle == 0)
+		wait(&gargoyle);
 	pid = fork();
 	if (pid == -1)
 	{
@@ -48,12 +51,15 @@ int func_addtofile(cmd_db *arglist, char *out_token)
 {
 	pid_t pid;
 	struct stat fstat;
-	int status, src, fd, excode;
+	int status, src, fd, excode, gargoyle;
 
 	src = dup(STDOUT_FILENO);
 	fd = open(out_token, O_CREAT | O_WRONLY | O_APPEND);
 	dup2(fd, STDOUT_FILENO);
 
+	gargoyle = arglist->statue;
+	if (gargoyle == 0)
+		wait(&gargoyle);
 	pid = fork();
 	if (pid == -1)
 	{
