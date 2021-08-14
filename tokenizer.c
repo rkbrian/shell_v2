@@ -44,7 +44,7 @@ cmd_db *create_node(char *t_array, int op_id, int starti, int endi)
 	}
 	while (node->token_arr[k])
 		k++;
-	node->end_id = k - 1, node->op_id = op_id;
+	node->end_id = k - 1, node->op_id = op_id, node->excode = 0;
 	node->next = NULL;
 	return (node);
 }

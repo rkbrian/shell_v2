@@ -9,6 +9,7 @@
 void execute(cmd_db *head, char *buffer, char **argv)
 {
 	cmd_db *current = NULL, *tmp = NULL, *prev = NULL;
+	int i = 0;
 
 	current = head;
 	while (current)
@@ -21,12 +22,14 @@ void execute(cmd_db *head, char *buffer, char **argv)
 		}
 		else if (current->op_id == 7 && current->excode == 0)
 			tmp->excode = 0, sub_exe(current, buffer, argv);
-		else if (current->op_id == 7 && current->excode != 0)
+		else if (current->op_id == 7)
 			tmp->excode = 1, sub_exe(current, buffer, argv);
 		else if (current->op_id == 5 && current->excode == 0)
 			tmp->excode = 1, sub_exe(current, buffer, argv);
-		else if (current->op_id == 5 && current->excode != 0)
+		else if (current->op_id == 5)
 			tmp->excode = 0, sub_exe(current, buffer, argv);
+		else if (current->op_id == 6)
+			sub_exe(current, buffer, argv);
 		else if (current->op_id == 9)
 		{
 			tmp = NULL;
@@ -34,9 +37,8 @@ void execute(cmd_db *head, char *buffer, char **argv)
 				break;
 			sub_exe(current, buffer, argv);
 		}
-		prev = current, current = current->next;
+		prev = current, current = current->next, i++;
 	}
-	/* free_db(head); */
 	free(buffer);
 }
 
@@ -51,36 +53,42 @@ void sub_exe(cmd_db *current, char *buffer, char **argv)
 	pid_t pid;
 	char *path_command = NULL;
 	struct stat fstat;
-	int status;
+	int status, gargoyle;
 	cmd_db *tmp;
 
-	pid = fork();
-	if (pid == -1)
+	gargoyle = current->statue;
+	if (gargoyle == 0)
+		wait(&gargoyle);
+	if (current->excode == 0)
 	{
-		perror("Error\n");
-		exit(EXIT_FAILURE);
-	}
-	if (pid == 0)
-	{
-		check_builtins(current, buffer);
-		if (stat(current->token_arr[0], &fstat) == 0)
-			execve(current->token_arr[0], current->token_arr, NULL);
-		path_command = check_dir(current->token_arr, argv), tmp = current->next;
-		if (path_command != NULL)
+		pid = fork();
+		if (pid == -1)
 		{
-			execve(path_command, current->token_arr, NULL);
-			if (tmp)
-				tmp->statue = lstat((const char *)path_command, fstat);
-			free(path_command);
+			perror("Error\n");
+			exit(EXIT_FAILURE);
 		}
-		else if (tmp)
-			tmp->statue = -1;
-	}
-	else
-	{
-		wait(&status);
-		if (_strcmp(current->token_arr[0], "exit") == 0)
-			_getoutof(current, buffer);
+		if (pid == 0)
+		{
+			check_builtins(current, buffer);
+			if (stat(current->token_arr[0], &fstat) == 0)
+				execve(current->token_arr[0], current->token_arr, NULL);
+			path_command = check_dir(current->token_arr, argv), tmp = current->next;
+			if (path_command != NULL)
+			{
+				execve(path_command, current->token_arr, NULL);
+				if (tmp)
+					tmp->statue = lstat(path_command, &fstat);
+				free(path_command);
+			}
+			else if (tmp)
+				tmp->statue = -1; /* traffic control */
+		}
+		else
+		{
+			wait(&status);
+			if (_strcmp(current->token_arr[0], "exit") == 0)
+				_getoutof(current, buffer);
+		}
 	}
 }
 

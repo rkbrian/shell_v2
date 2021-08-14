@@ -12,13 +12,12 @@ int func_tofile(cmd_db *arglist, char *out_token)
 	struct stat fstat;
 	int status, src, fd, excode, gargoyle;
 
-	src = dup(STDOUT_FILENO);
-	fd = open(out_token, O_CREAT | O_TRUNC | O_WRONLY);
-	dup2(fd, STDOUT_FILENO);
-
 	gargoyle = arglist->statue;
 	if (gargoyle == 0)
 		wait(&gargoyle);
+	src = dup(STDOUT_FILENO);
+	fd = open(out_token, O_CREAT | O_TRUNC | O_WRONLY);
+	dup2(fd, STDOUT_FILENO);
 	pid = fork();
 	if (pid == -1)
 	{
@@ -53,13 +52,12 @@ int func_addtofile(cmd_db *arglist, char *out_token)
 	struct stat fstat;
 	int status, src, fd, excode, gargoyle;
 
-	src = dup(STDOUT_FILENO);
-	fd = open(out_token, O_CREAT | O_WRONLY | O_APPEND);
-	dup2(fd, STDOUT_FILENO);
-
 	gargoyle = arglist->statue;
 	if (gargoyle == 0)
 		wait(&gargoyle);
+	src = dup(STDOUT_FILENO);
+	fd = open(out_token, O_CREAT | O_WRONLY | O_APPEND);
+	dup2(fd, STDOUT_FILENO);
 	pid = fork();
 	if (pid == -1)
 	{
@@ -123,17 +121,11 @@ int func_fromfile(cmd_db *arglist, char *out_token)
 
 /* func_heredoc - acquire all streams ends at a given stream */
 /* int func_heredoc(cmd_db *arglist, char *out_token) */
-
-/**
- * func_pipeline - function to pipe results of left to right
- * @arglist: linked list of commands
- * @out_token: token on the right of the redirector
- * Return: exit code
- */
-/* int func_pipeline(cmd_db *arglist, char *out_token)
-{
-	int src, fd, excode;
-        int status = 0;
-
-	src = dup(STDIN_FILENO);
-	}*/
+/* func_pipeline - function to pipe results of left to right */
+/* @arglist: linked list of commands */
+/* @out_token: token on the right of the redirector */
+/* Return: exit code */
+/* int func_pipeline(cmd_db *arglist, char *out_token) */
+/* {int src, fd, excode; */
+/* int status = 0; */
+/* src = dup(STDIN_FILENO);} */
