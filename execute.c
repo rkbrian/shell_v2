@@ -8,7 +8,7 @@
  */
 void execute(cmd_db *head, char *buffer, char **argv)
 {
-	cmd_db *current = NULL, *tmp = NULL;
+	cmd_db *current = NULL, *tmp = NULL, *prev = NULL;
 
 	current = head;
 	while (current)
@@ -28,8 +28,13 @@ void execute(cmd_db *head, char *buffer, char **argv)
 		else if (current->op_id == 5 && current->excode != 0)
 			tmp->excode = 0, sub_exe(current, buffer, argv);
 		else if (current->op_id == 9)
-			tmp = NULL, sub_exe(current, buffer, argv);
-		current = current->next;
+		{
+			tmp = NULL;
+			if (prev && prev->op_id < 5 && current->end_id == 0)
+				break;
+			sub_exe(current, buffer, argv);
+		}
+		prev = current, current = current->next;
 	}
 	/* free_db(head); */
 	free(buffer);

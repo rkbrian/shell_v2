@@ -5,31 +5,22 @@
  * @cmd: input command that triggers error message
  * @argv: argument array
  */
-
 void no_file(char *cmd, char **argv)
 {
 	char *buffer = NULL;
 	char *err = ": No such file or directory\n";
-	int argv_len = 0;
-	int err_len = 0;
-	int bufsize = 0;
-	int i = 0;
-	int j = 0;
-	int k = 0;
+	int argv_len = 0, err_len = 0, bufsize = 0;
+	int i = 0, j = 0, k = 0;
 	(void)cmd;
 
-	argv_len = _strlen(argv[0]);
-	err_len = _strlen(err);
-
+	argv_len = _strlen(argv[0]), err_len = _strlen(err);
 	bufsize = argv_len + err_len;
-
 	buffer = malloc(sizeof(char) * bufsize);
 	if (!buffer)
 	{
 		free(buffer);
 		return;
 	}
-
 	for (i = 0; i < bufsize; i++)
 	{
 		if (i < argv_len)

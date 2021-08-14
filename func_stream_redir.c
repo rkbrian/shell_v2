@@ -29,10 +29,8 @@ int func_tofile(cmd_db *arglist, char *out_token)
 			execve(arglist->token_arr[0], arglist->token_arr, NULL);
 	}
 	else
-	{
 		wait(&status);
-		excode = WEXITSTATUS(status);
-	}
+	excode = WEXITSTATUS(status);
 	close(fd);
 	/* fflush(stdout); */
 	dup2(src, STDOUT_FILENO);
@@ -69,10 +67,8 @@ int func_addtofile(cmd_db *arglist, char *out_token)
 			execve(arglist->token_arr[0], arglist->token_arr, NULL);
 	}
 	else
-	{
 		wait(&status);
-		excode = WEXITSTATUS(status);
-	}
+	excode = WEXITSTATUS(status);
 	close(fd);
 	/* fflush(stdout); */
 	dup2(src, STDOUT_FILENO);
@@ -110,10 +106,8 @@ int func_fromfile(cmd_db *arglist, char *out_token)
 			execve(arglist->token_arr[0], arglist->token_arr, NULL);
 	}
 	else
-	{
 		wait(&status);
-		excode = WEXITSTATUS(status);
-	}
+	excode = WEXITSTATUS(status);
 	close(fd);
 	/* fflush(stdout); */
 	dup2(src, STDIN_FILENO);
