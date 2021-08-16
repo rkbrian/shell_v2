@@ -43,8 +43,7 @@ void print_the_env(void)
 
 	for (i = 0; environ[i] != NULL; i++)
 	{
-		_puts(environ[i]);
-		_putchar('\n');
+		printf("%s\n", environ[i]);
 	}
 }
 
