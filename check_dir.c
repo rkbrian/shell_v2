@@ -15,6 +15,7 @@ char *check_dir(char **command_array, char **argv)
 	int i = 0;
 
 	env_path = _getenv("PATH");
+	/* printf("check dir envpath: %s\n", env_path); */
 	dir_tokens = dir_tokenize(env_path);
 
 	while (dir_tokens[i])
@@ -28,6 +29,7 @@ char *check_dir(char **command_array, char **argv)
 		}
 		i++;
 	}
-	no_file(command_array[0], argv);
+	(void)argv;
+	/* no_file(command_array[0], argv); */
 	return (NULL);
 }

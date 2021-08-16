@@ -20,10 +20,10 @@ extern char **environ;
  * @arr: pointer to the array of each operation, to be tokenized
  * @op: operator pointer
  * @token_arr: pointer to the tokenized array of each operation
+ * @path: environmental variable
  * @end_id: index of the token before operator
  * @op_id: index of the operator in the list
  * @statue: process status for next node process to check and wait for
- * output_fd file descriptor for the output for the command
  * @excode: exit code
  * @next: points to the next node
  */
@@ -32,10 +32,10 @@ typedef struct command_line_database
 	char *arr;
 	char *op;
 	char **token_arr;
+	char *path;
 	int end_id;
 	int op_id;
 	int statue;
-	/* int output_fd;*/
 	int excode;
 	struct command_line_database *next;
 } cmd_db;
@@ -70,10 +70,11 @@ char *_strncpy(char *dest, char *src, int n);
 void *_realloc(void *ptr, unsigned int new_size);
 int _strncmp(const char *s1, const char *s2, int len);
 char *_strdup(const char *str);
+void waitgar(cmd_db *node);
 /* unused: void exit_shell(char **command_array, char *buffer); */
 /* execute function */
 void execute(cmd_db *head, char *buffer, char **argv);
-void changedir(char **command_array, char *buffer);
+void changedir(cmd_db *node, char *buffer);
 int op_process(cmd_db *arglist, char *out_token);
 void sub_exe(cmd_db *current, char *buffer, char **argv);
 /* environmental varriable */

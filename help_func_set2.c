@@ -91,3 +91,16 @@ void exit_shell(char **command_array, char *buffer)
 		free(command_array[i]);
 	free(buffer);
 }
+
+/**
+ * waitgar - wait for gargoyle status
+ * @node: node with gargoyle status
+ */
+void waitgar(cmd_db *node)
+{
+	int gargoyle;
+
+	gargoyle = node->statue;
+	if (gargoyle == 0)
+		wait(&gargoyle);
+}

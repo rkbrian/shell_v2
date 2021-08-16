@@ -53,27 +53,22 @@ void sub_exe(cmd_db *current, char *buffer, char **argv)
 	pid_t pid;
 	char *path_command = NULL;
 	struct stat fstat;
-	int status, gargoyle;
+	int status, errflag = 0;
 	cmd_db *tmp;
 
-	gargoyle = current->statue;
-	if (gargoyle == 0)
-		wait(&gargoyle);
+	waitgar(current);
 	if (current->excode == 0)
 	{
 		pid = fork();
 		if (pid == -1)
-		{
-			perror("Error\n");
-			exit(EXIT_FAILURE);
-		}
+			perror("Error\n"), exit(EXIT_FAILURE);
 		if (pid == 0)
 		{
 			check_builtins(current, buffer);
 			if (stat(current->token_arr[0], &fstat) == 0)
 				execve(current->token_arr[0], current->token_arr, NULL);
 			path_command = check_dir(current->token_arr, argv), tmp = current->next;
-			if (path_command != NULL)
+			if (path_command != NULL && (_strcmp(current->token_arr[0], "cd") != 0))
 			{
 				execve(path_command, current->token_arr, NULL);
 				if (tmp)
@@ -81,11 +76,15 @@ void sub_exe(cmd_db *current, char *buffer, char **argv)
 				free(path_command);
 			}
 			else if (tmp)
-				tmp->statue = -1; /* traffic control */
+				tmp->statue = -1; /* traffic control attempt */
+			else
+				errflag = 1;
 		}
 		else
 		{
 			wait(&status);
+			if ((_strcmp(current->token_arr[0], "cd") != 0) && (errflag == 1))
+				no_file(current->token_arr[0], argv);
 			if (_strcmp(current->token_arr[0], "exit") == 0)
 				_getoutof(current, buffer);
 		}
@@ -94,20 +93,20 @@ void sub_exe(cmd_db *current, char *buffer, char **argv)
 
 /**
  * changedir - function to change directory and env variable
- * @command_array: input command
+ * @node: input command database
  * @buffer: buffer allocated for input command
  */
-void changedir(char **command_array, char *buffer)
+void changedir(cmd_db *node, char *buffer)
 {
-	if (!command_array[1])
+	if (node->token_arr[1] == NULL)
 	{
-		chdir("HOME");
-		getcwd(buffer, _strlen(buffer));
+		chdir(_getenv("HOME"));
+		getcwd(buffer, _strlen(buffer) + _strlen(_getenv("HOME")));
 	}
-	else if (!command_array[2])
+	else if (node->token_arr[2] == NULL)
 	{
-		chdir(command_array[1]);
-		getcwd(buffer, _strlen(buffer));
+		chdir(node->token_arr[1]);
+		getcwd(buffer, _strlen(buffer) + _strlen(node->token_arr[1]));
 	}
 	else
 		perror("getcwd");

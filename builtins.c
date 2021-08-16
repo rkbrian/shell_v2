@@ -23,8 +23,9 @@ int check_builtins(cmd_db *head, char *buffer)
 			case 1:
 				print_the_env();
 				return (1);
+				/* break; */
 			case 2:
-				changedir(head->token_arr, buffer);
+				changedir(head, buffer);
 				return (1);
 			}
 		}
