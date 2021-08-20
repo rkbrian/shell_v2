@@ -37,19 +37,13 @@ char *_getenv(const char *name)
 		{
 			env_var = _strdup(environ[i]);
 			if (env_var == NULL)
-			{
 				free(env_var);
-			}
 			while (env_var[j] != '=')
-			{
 				j++;
-			}
 			j++;
 			size = j;
 			while (env_var[size])
-			{
 				size++;
-			}
 			value = malloc(sizeof(char) * size);
 			if (value == NULL)
 			{
@@ -59,13 +53,17 @@ char *_getenv(const char *name)
 			while (env_var[j])
 			{
 				value[k] = env_var[j];
-				j++;
-				k++;
+				j++, k++;
 			}
+			free(env_var);
 			return (value);
 		}
 		i++;
 	}
+	if (env_var)
+		free(env_var);
+	if (value)
+		free(value);
 	return (NULL);
 }
 

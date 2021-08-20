@@ -33,19 +33,11 @@ void *_realloc(void *ptr, unsigned int new_size)
  */
 int _strncmp(const char *s1, const char *s2, int len)
 {
-	int i;
+	int i, ret;
 	char *sa, *sb;
 
 	sa = malloc(sizeof(char) * (len + 1));
-	if (sa == NULL)
-	{
-		free(sa);
-	}
 	sb = malloc(sizeof(char) * (len + 1));
-	if (sb == NULL)
-	{
-		free(sb);
-	}
 	for (i = 0; s1[i] != '\0' && s2[i] != '\0' && i < len; i++)
 	{
 		sa[i] = s1[i];
@@ -56,10 +48,18 @@ int _strncmp(const char *s1, const char *s2, int len)
 		sa++;
 		sb++;
 	}
+	ret = *sa - *sb;
 	if (*sa == *sb)
+	{
+		free(sa);
+		free(sb);
 		return (0);
-	else
-		return (*sa - *sb);
+	}
+	if (sa)
+		free(sa);
+	if (sb)
+		free(sb);
+	return (ret);
 }
 
 /**

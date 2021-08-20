@@ -77,6 +77,7 @@ void execute(cmd_db *head, char *buffer, char **argv);
 void changedir(cmd_db *node, char *buffer);
 int op_process(cmd_db *arglist, char *out_token);
 void sub_exe(cmd_db *current, char *buffer, char **argv);
+/* void builtin_return() */
 /* environmental varriable */
 char *_getenv(const char *name);
 int dir_num(char *env_path);

@@ -59,16 +59,17 @@ void sub_exe(cmd_db *current, char *buffer, char **argv)
 	waitgar(current);
 	if (current->excode == 0)
 	{
+		if (check_builtins(current, buffer) != 0)
+			return;
 		pid = fork();
 		if (pid == -1)
 			perror("Error\n"), exit(EXIT_FAILURE);
 		if (pid == 0)
 		{
-			check_builtins(current, buffer);
 			if (stat(current->token_arr[0], &fstat) == 0)
 				execve(current->token_arr[0], current->token_arr, NULL);
 			path_command = check_dir(current->token_arr, argv), tmp = current->next;
-			if (path_command != NULL && (_strcmp(current->token_arr[0], "cd") != 0))
+			if (path_command != NULL) /* && (_strcmp(current->token_arr[0], "cd") != 0)) */
 			{
 				execve(path_command, current->token_arr, NULL);
 				if (tmp)
@@ -86,7 +87,11 @@ void sub_exe(cmd_db *current, char *buffer, char **argv)
 			if ((_strcmp(current->token_arr[0], "cd") != 0) && (errflag == 1))
 				no_file(current->token_arr[0], argv);
 			if (_strcmp(current->token_arr[0], "exit") == 0)
+			{
+				if (path_command)
+					free(path_command);
 				_getoutof(current, buffer);
+			}
 		}
 	}
 }
@@ -98,10 +103,14 @@ void sub_exe(cmd_db *current, char *buffer, char **argv)
  */
 void changedir(cmd_db *node, char *buffer)
 {
+	char *env_str;
+
 	if (node->token_arr[1] == NULL)
 	{
-		chdir(_getenv("HOME"));
-		getcwd(buffer, _strlen(buffer) + _strlen(_getenv("HOME")));
+		env_str = _getenv("HOME");
+		chdir(env_str);
+		getcwd(buffer, _strlen(buffer) + _strlen(env_str));
+		free(env_str);
 	}
 	else if (node->token_arr[2] == NULL)
 	{
