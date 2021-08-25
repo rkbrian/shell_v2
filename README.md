@@ -2,7 +2,9 @@
 
 ## Description
 
-This is a simple shell created for a Holberton School Project. It was built to mimic some of the basic functionality of the original Unix shell, to handle file redirections, command separator and logical operators.
+This is a simple shell created for a Holberton School Project. It was built to mimic some of the basic functionality of the original Unix shell, to handle file redirections, command separator and logical operators. 
+Compile using: gcc -Wall -Werror -Wextra -pedantic *.c -o hsh
+
 
 ## File Organization
 
@@ -22,7 +24,17 @@ This is a simple shell created for a Holberton School Project. It was built to m
 | putnchar.c          | Print process functions         |
 
 
+## Usage Example
+### Non-interactive mode
+$ echo "ls" | ./hsh
+$ echo "cat README.md; ls -l" | ./hsh
+
+### Interactive mode
+hsh$ ls
+hsh$ cat README.md; ls -l
+
 
 ## Authors
-Brian Kong (Shell V1 and V2)
+This project is cloned from and modified based on shell v1 Brian has worked on before. Brian is the sole author of thie Shell V2 project because there is no peer for the second contributer in his cohort.
+Brian Kong (Contributer of Shell V1, sole author of Shell V2)
 Gunnar Bachelor (Contributer of V1)
